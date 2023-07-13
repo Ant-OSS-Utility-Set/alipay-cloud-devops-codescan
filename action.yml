@@ -1,0 +1,15 @@
+name: 'alipay-cloud-devops-codescan'
+description: 'Greet someone and record the time'
+inputs:
+    parent_uid:  # id of input
+        description: 'a param to get token'
+        required: true
+    private_key:  # id of input
+        description: 'another param to get token'
+        required: true
+outputs:
+    result: # id of output
+        description: 'code scan passed or not'
+runs:
+    using: 'node16'
+    main: 'index.js'
