@@ -23,7 +23,8 @@ async function getStarted() {
         // });
 
         triggerFlow(response.data.data.access_token);
-        core.setOutput("result", response.data.data.access_token)
+        //core.setOutput("result", response.data.data.access_token)
+        core.setFailed("你的代码有问题!!")
 
         // // `who-to-greet` input defined in action metadata file
         // const nameToGreet = core.getInput('who_to_greet');
