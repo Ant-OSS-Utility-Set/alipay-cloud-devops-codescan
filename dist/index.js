@@ -9400,11 +9400,19 @@ const axios = __nccwpck_require__(8757);
 
 async function getStarted() {
     try {
-        const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
-        const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+        let projectId;
+        let templateId;
+        let repo = process.env.GITHUB_REPOSITORY;
+        switch (repo){
+            case "xuqiu/MyLeetCode":
+                projectId = "${projectId}";
+                templateId = 795;
+                break;
+            default:
+                core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
+        }
 
-        console.log(`Owner: ${owner}`);
-        console.log(`Repo: ${repo}`);
+
         //1,获取token
         core.info("starting...")
         const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount',
@@ -9417,8 +9425,8 @@ async function getStarted() {
             'Authorization': `Bearer ${tokenResponse.data.data.access_token}`,
             'x-node-id': '14955076510547972'
         };
-        const triggerResponse = await axios.post('https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/5000012/pipeline/execute',
-         {"templateId":795,"branch":"master"},
+        const triggerResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/execute`,
+         {"templateId":templateId,"branch":"master"},
         { headers: headers }
         );
         const recordId = triggerResponse.data.result.recordId;
@@ -9427,8 +9435,8 @@ async function getStarted() {
         core.info("scanning...")
         let recordResponse;
         let status = "";
-        for (let i = 0; i < 3; i++) {
-            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/5000012/pipeline/${recordId}`,
+        for (let i = 0; i < 30; i++) {
+            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/${recordId}`,
                 {headers: headers}
             );
             status=recordResponse.data.result.status
@@ -9452,24 +9460,14 @@ async function getStarted() {
         const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
         const jobId = failureJob.id;
 
-        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/5000012/pipeline/${recordId}/job/${jobId}`,
+        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
             {headers: headers}
         );
         const urgentJson=jobResponse.data.result.data.urgent;
         const errorMessage = JSON.parse(urgentJson)[0].title;
 
 
-        //core.setOutput("result", response.data.data.access_token)
         core.setFailed(errorMessage)
-
-        // // `who-to-greet` input defined in action metadata file
-        // const nameToGreet = core.getInput('who_to_greet');
-        // console.log(`Hello ${nameToGreet}!`);
-        // const time = (new Date()).toTimeString();
-        // core.setOutput("time", time);
-        // // Get the JSON webhook payload for the event that triggered the workflow
-        // const payload = JSON.stringify(github.context.payload, undefined, 2)
-        // console.log(`The event payload: ${payload}`);
     } catch (error) {
         core.setFailed(error.message);
     }
