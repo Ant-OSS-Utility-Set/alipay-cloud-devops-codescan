@@ -35,7 +35,7 @@ async function getStarted() {
             if (status === "FINISHED") {
                 break;
             }
-            await sleep(120);
+            await sleep(10);
         }
         core.info("scan finished")
         let result = recordResponse.data.result.result;
