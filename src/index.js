@@ -10,7 +10,7 @@ async function getStarted() {
         let repo = process.env.GITHUB_REPOSITORY;
         switch (repo){
             case "xuqiu/MyLeetCode":
-                projectId = "${projectId}";
+                projectId = "5000012";
                 templateId = 795;
                 break;
             default:
