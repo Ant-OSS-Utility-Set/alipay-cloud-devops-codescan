@@ -6,6 +6,7 @@ const axios = require('axios');
 async function getStarted() {
     try {
         //1,获取token
+        core.info("starting...")
         const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount',
             {
                 "parent_uid": core.getInput('parent_uid', { required: true }),
@@ -23,6 +24,7 @@ async function getStarted() {
         const recordId = triggerResponse.data.result.recordId;
         // const recordId = 5700008;
         //3,循环获取recordInfo
+        core.info("scanning...")
         let recordResponse;
         let status = "";
         for (let i = 0; i < 3; i++) {
@@ -35,6 +37,7 @@ async function getStarted() {
             }
             await sleep(120);
         }
+        core.info("scan finished")
         let result = recordResponse.data.result.result;
 
 
@@ -43,6 +46,7 @@ async function getStarted() {
             return;
         }
 
+        core.info("getting info...")
         //获取失败的job, 获取失败信息
         const failureStage = recordResponse.data.result.stageExecutions.find(stage => stage.result === 'FAILURE');
         const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
