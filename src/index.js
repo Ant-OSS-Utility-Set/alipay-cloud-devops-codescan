@@ -5,6 +5,11 @@ const axios = require('axios');
 
 async function getStarted() {
     try {
+        const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
+        const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+
+        console.log(`Owner: ${owner}`);
+        console.log(`Repo: ${repo}`);
         //1,获取token
         core.info("starting...")
         const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount',
