@@ -9400,13 +9400,20 @@ const axios = __nccwpck_require__(8757);
 
 async function getStarted() {
     try {
+        const spaceId = `600087`;
         let projectId;
         let templateId;
-        let repo = process.env.GITHUB_REPOSITORY;
+        const repo = process.env.GITHUB_REPOSITORY;
+        const branchRef = process.env.GITHUB_REF;
+        const branchName = branchRef.split('/').pop();
         switch (repo){
             case "xuqiu/MyLeetCode":
                 projectId = "5000012";
                 templateId = 795;
+                break;
+            case "sofastack/sofa-rpc":
+                projectId = "5600832";
+                templateId = 5600545;
                 break;
             default:
                 core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
@@ -9425,8 +9432,8 @@ async function getStarted() {
             'Authorization': `Bearer ${tokenResponse.data.data.access_token}`,
             'x-node-id': '14955076510547972'
         };
-        const triggerResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/execute`,
-         {"templateId":templateId,"branch":"master"},
+        const triggerResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`,
+         {"templateId":templateId,"branch":`${branchName}`},
         { headers: headers }
         );
         const recordId = triggerResponse.data.result.recordId;
@@ -9436,7 +9443,7 @@ async function getStarted() {
         let recordResponse;
         let status = "";
         for (let i = 0; i < 30; i++) {
-            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/${recordId}`,
+            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`,
                 {headers: headers}
             );
             status=recordResponse.data.result.status
@@ -9460,7 +9467,7 @@ async function getStarted() {
         const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
         const jobId = failureJob.id;
 
-        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/600087/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
+        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
             {headers: headers}
         );
         const urgentJson=jobResponse.data.result.data.urgent;
