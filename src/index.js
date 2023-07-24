@@ -75,8 +75,11 @@ async function getStarted() {
             {headers: headers}
         );
         const highAndUrgent = [...JSON.parse(jobResponse.data.result.data.high), ...JSON.parse(jobResponse.data.result.data.urgent)];
+        if (highAndUrgent.length === 0) {
+            core.setOutput("result","PASSED")
+            return;
+        }
         const titleList = highAndUrgent.map(item => item.title);
-
         for (const errorMessage of titleList) {
             core.setFailed(errorMessage)
         }
