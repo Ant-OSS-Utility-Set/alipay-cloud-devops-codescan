@@ -71,15 +71,16 @@ async function getStarted() {
         const failureStage = recordResponse.data.result.stageExecutions.find(stage => stage.result === 'FAILURE');
         const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
         const jobId = failureJob.id;
-
         const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
             {headers: headers}
         );
-        const urgentJson=jobResponse.data.result.data.urgent;
-        const errorMessage = JSON.parse(urgentJson)[0].title;
+        const highAndUrgent = [...JSON.parse(jobResponse.data.result.data.high), ...JSON.parse(jobResponse.data.result.data.urgent)];
+        const titleList = highAndUrgent.map(item => item.title);
 
+        for (const errorMessage of titleList) {
+            core.setFailed(errorMessage)
+        }
 
-        core.setFailed(errorMessage)
     } catch (error) {
         core.setFailed(error.message);
     }
