@@ -4987,11 +4987,34 @@ module.exports = eval("require")("debug");
 
 /***/ }),
 
+/***/ 875:
+/***/ ((module) => {
+
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = () => ([]);
+webpackEmptyContext.resolve = webpackEmptyContext;
+webpackEmptyContext.id = 875;
+module.exports = webpackEmptyContext;
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
@@ -9385,21 +9408,82 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+;// CONCATENATED MODULE: ./src/GitUtil.js
+const { execSync } = __nccwpck_require__(2081);
+class GitUtil {
+    token
+    constructor(token) {
+        this.token = token;
+    }
+    checkoutB(branchName){
+        execSync(`git checkout - b ${branchName}`);
+    }
+}
+;// CONCATENATED MODULE: ./src/index.js
 
 
 const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
+const supportPrActions = ['opened', 'synchronize', 'reopened']
+;
+const PAT = core.getInput('pat', { required: true })
+const mathUtils = new GitUtil(PAT);
 
 async function getStarted() {
     try {
+        //push事件直接扫描该分支
+        if (process.env.GITHUB_EVENT_NAME === 'push') {
+            // console.log('This is a push event.');
+            core.setFailed("调试中,暂时跳过")
+            return
+        //pr事件,如果是同owner,扫描源分支,如果是fork项目,创建临时分支,扫描临时分支
+        //最后根据扫描结果,给pr做标记
+        } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+            const eventDataPath = process.env.GITHUB_EVENT_PATH;
+            core.info("eventDataPath:"+eventDataPath);
+            const eventData = __nccwpck_require__(875)(eventDataPath);
+            core.info("eventData:"+eventData);
+            const pullRequestAction = eventData.action;
+            core.info("pullRequestAction:"+pullRequestAction);
+            if (! supportPrActions.includes(pullRequestAction) ){
+                core.setFailed(`pull_request只支持 ${supportPrActions}`);
+                return
+            }
+            console.log('Pull request action:', pullRequestAction);
+            core.info("pullRequestAction:"+pullRequestAction);
+            return
+        } else {
+            core.setFailed("本工具暂时只支持push/pull_request我");
+            return;
+        }
         const spaceId = `600087`;
         let projectId;
         let templateId;
