@@ -46,16 +46,10 @@ async function getStarted() {
                 // 检出指定分支
                 execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
+                core.info(`owner: ${owner}`);
                 execSync(`git remote add ${owner} https://${owner}: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@github.com/xuqiu/MyLeetCode.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
-
-                //Set credential and PAT
-                execSync(`git config --global credential.helper store`);
-                // execSync(`git credential-store --store=~/git-credentials.txt store`);
-                execSync(`echo 'protocol=https\nhost=github.com\npassword=${PAT}'|git credential approve`);
-                execSync(`export GIT_ASKPASS=echo`);
-                execSync(`export GIT_PASSWORD=${PAT}`);
                 execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
 
 
