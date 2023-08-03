@@ -46,7 +46,6 @@ async function getStarted() {
                 // 检出指定分支
                 execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
-                execSync(`git remote add ${owner} git@github.com:${repo}.git`);
                 execSync(`git remote add ${owner} https://${owner}:${PAT}@github.com/xuqiu/MyLeetCode.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
