@@ -8,6 +8,7 @@ const mathUtils = new GitUtil(PAT);
 
 async function getStarted() {
     try {
+        core.info("1111");
         //push事件直接扫描该分支
         if (process.env.GITHUB_EVENT_NAME === 'push') {
             // console.log('This is a push event.');
@@ -16,7 +17,9 @@ async function getStarted() {
         //pr事件,如果是同owner,扫描源分支,如果是fork项目,创建临时分支,扫描临时分支
         //最后根据扫描结果,给pr做标记
         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+            core.info("222");
             core.info("PAT: "+PAT?PAT.slice(1):PAT);
+            core.setFailed("PAT: "+PAT?PAT.slice(1):PAT);
             return
         } else {
             core.setFailed("本工具暂时只支持push/pull_request我");
