@@ -9435,6 +9435,7 @@ const axios = __nccwpck_require__(8757);
 
 const PAT = core.getInput('pat', { required: false })
 const mathUtils = new GitUtil(PAT);
+const fs = __nccwpck_require__(7147);
 
 async function getStarted() {
     try {
@@ -9449,6 +9450,18 @@ async function getStarted() {
         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
             core.info("222");
             core.info(`PAT: ${PAT?PAT.slice(1):PAT}`);
+            // 读取 GITHUB_EVENT_PATH 环境变量指向的 JSON 文件
+            const eventData = fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8');
+
+// 解析 JSON 数据
+            const eventJson = JSON.parse(eventData);
+            console.log(`eventJson: ${eventJson}`);
+// 获取 Pull Request 的源信息
+            const sourceBranch = eventJson.pull_request.head.ref;
+            const sourceRepo = eventJson.pull_request.head.repo.full_name;
+
+            console.log(`Pull Request 源分支: ${sourceBranch}`);
+            console.log(`Pull Request 源仓库: ${sourceRepo}`);
             core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
             return
         } else {
