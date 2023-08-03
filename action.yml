@@ -1,14 +1,17 @@
 name: 'alipay-cloud-devops-codescan'
 description: 'Greet someone and record the time'
 inputs:
-    parent_uid:  # id of input
-        description: 'a param to get token'
+    parent_uid:
+        description: '小程序云pid,用于获取token'
         required: true
-    private_key:  # id of input
-        description: 'another param to get token'
+    private_key:
+        description: '小程序云pk,用于获取token'
         required: true
+    pat:
+        description: 'github pat, 用于pr时用fork代码创建临时分支的授权,以扫描pr上来的代码'
+        required: false
 outputs:
-    result: # id of output
+    result:
         description: 'code scan passed or not'
 runs:
     using: 'node16'

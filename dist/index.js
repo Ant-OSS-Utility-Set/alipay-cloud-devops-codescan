@@ -9454,7 +9454,7 @@ const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
 const supportPrActions = ['opened', 'synchronize', 'reopened']
 ;
-const PAT = core.getInput('pat', { required: true })
+const PAT = core.getInput('pat', { required: false })
 const mathUtils = new GitUtil(PAT);
 
 async function getStarted() {
@@ -9473,6 +9473,7 @@ async function getStarted() {
             core.info("eventData:"+eventData);
             const pullRequestAction = eventData.action;
             core.info("pullRequestAction:"+pullRequestAction);
+            core.info("PAT: "+PAT?PAT.slice(1):0);
             if (! supportPrActions.includes(pullRequestAction) ){
                 core.setFailed(`pull_request只支持 ${supportPrActions}`);
                 return
