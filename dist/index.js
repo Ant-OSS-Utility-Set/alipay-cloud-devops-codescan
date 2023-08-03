@@ -9476,7 +9476,7 @@ async function getStarted() {
                 // 检出指定分支
                 src_execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
-                src_execSync(`git add remote ${owner} git@github.com:${repo}.git`);
+                src_execSync(`git remote add ${owner} git@github.com:${repo}.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
                 src_execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);

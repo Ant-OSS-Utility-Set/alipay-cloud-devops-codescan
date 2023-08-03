@@ -46,7 +46,7 @@ async function getStarted() {
                 // 检出指定分支
                 execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
-                execSync(`git add remote ${owner} git@github.com:${repo}.git`);
+                execSync(`git remote add ${owner} git@github.com:${repo}.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
                 execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
