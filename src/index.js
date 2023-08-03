@@ -49,6 +49,13 @@ async function getStarted() {
                 execSync(`git remote add ${owner} git@github.com:${repo}.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
+
+                //Set credential and PAT
+                execSync(`git config --global credential.helper store`);
+                execSync(`git credential-store --store=~/git-credentials.txt store`);
+                execSync(`echo 'protocol=https\nhost=github.com\npassword=${PAT}'|git credential approve`);
+                execSync(`export GIT_ASKPASS=echo`);
+                execSync(`export GIT_PASSWORD=${PAT}`);
                 execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
 
 
