@@ -9436,8 +9436,12 @@ const axios = __nccwpck_require__(8757);
 const PAT = core.getInput('pat', { required: false })
 const mathUtils = new GitUtil(PAT);
 const fs = __nccwpck_require__(7147);
-
+const { execSync: src_execSync } = __nccwpck_require__(2081);
 async function getStarted() {
+    const repo = process.env.GITHUB_REPOSITORY;
+    const branchRef = process.env.GITHUB_REF;
+    const branchName = branchRef.split('/').pop();
+    const owner = repo.split('/').shift();
     try {
         core.info("1111");
         //push事件直接扫描该分支
@@ -9455,13 +9459,24 @@ async function getStarted() {
 
 // 解析 JSON 数据
             const eventJson = JSON.parse(eventData);
-            console.log(`eventJson: ${eventJson}`);
+            console.log(`eventData: ${eventData}`);
 // 获取 Pull Request 的源信息
             const sourceBranch = eventJson.pull_request.head.ref;
             const sourceRepo = eventJson.pull_request.head.repo.full_name;
+//             const sourceBranch = "master"
+//             const sourceRepo = "yinzhennantw/MyLeetCode"
+            const sourceOwner = sourceRepo.split('/').shift();
+            if (sourceOwner === owner) {
+                // todo 直接检查分支
+            }else{
+                // 克隆 fork 子项目
+                src_execSync(`git clone https://github.com/${sourceRepo}.git`);
+                // 进入子项目目录
+                process.chdir(`${sourceRepo.split('/').pop()}`);
+                // 检出指定分支
+                src_execSync(`git checkout ${sourceBranch}`);
 
-            console.log(`Pull Request 源分支: ${sourceBranch}`);
-            console.log(`Pull Request 源仓库: ${sourceRepo}`);
+            }
             core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
             return
         } else {
@@ -9471,9 +9486,7 @@ async function getStarted() {
         const spaceId = `600087`;
         let projectId;
         let templateId;
-        const repo = process.env.GITHUB_REPOSITORY;
-        const branchRef = process.env.GITHUB_REF;
-        const branchName = branchRef.split('/').pop();
+
         switch (repo){
             case "xuqiu/MyLeetCode":
                 projectId = "5000012";
