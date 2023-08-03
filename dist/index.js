@@ -9459,7 +9459,7 @@ async function getStarted() {
 
 // 解析 JSON 数据
             const eventJson = JSON.parse(eventData);
-            console.log(`eventData: ${eventData}`);
+            // console.log(`eventData: ${eventData}`);
 // 获取 Pull Request 的源信息
             const sourceBranch = eventJson.pull_request.head.ref;
             const sourceRepo = eventJson.pull_request.head.repo.full_name;
@@ -9477,6 +9477,7 @@ async function getStarted() {
                 src_execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
                 src_execSync(`git remote add ${owner} git@github.com:${repo}.git`);
+                src_execSync(`git remote add ${owner} https://${owner}:${PAT}@github.com/xuqiu/MyLeetCode.git`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
 
