@@ -47,7 +47,8 @@ async function getStarted() {
                 execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
                 core.info(`owner: ${owner}`);
-                execSync(`git remote add ${owner} https://${owner}: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@github.com/xuqiu/MyLeetCode.git`);
+                execSync(`git remote add ${owner} https://a:${PAT}@github.com/xuqiu/MyLeetCode.git`);
+                execSync(`git remote -v`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
                 execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
