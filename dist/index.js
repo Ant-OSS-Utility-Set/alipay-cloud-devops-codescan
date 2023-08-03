@@ -9482,7 +9482,7 @@ async function getStarted() {
 
                 //Set credential and PAT
                 src_execSync(`git config --global credential.helper store`);
-                src_execSync(`git credential-store --store=~/git-credentials.txt store`);
+                // execSync(`git credential-store --store=~/git-credentials.txt store`);
                 src_execSync(`echo 'protocol=https\nhost=github.com\npassword=${PAT}'|git credential approve`);
                 src_execSync(`export GIT_ASKPASS=echo`);
                 src_execSync(`export GIT_PASSWORD=${PAT}`);
