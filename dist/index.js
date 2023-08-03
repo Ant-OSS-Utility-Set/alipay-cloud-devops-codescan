@@ -9415,55 +9415,55 @@ async function getStarted() {
     const owner = repo.split('/').shift();
     try {
         core.info("1111");
-        //push事件直接扫描该分支
-        if (process.env.GITHUB_EVENT_NAME === 'push') {
-            // console.log('This is a push event.');
-            core.setFailed("调试中,暂时跳过")
-            return
-        //pr事件,如果是同owner,扫描源分支,如果是fork项目,创建临时分支,扫描临时分支
-        //最后根据扫描结果,给pr做标记
-        } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
-            core.info("222");
-            core.info(`PAT: ${PAT}`);
-            let parent_uid = core.getInput('parent_uid');
-            core.info(`parent_uid: ${parent_uid}`);
-            // 读取 GITHUB_EVENT_PATH 环境变量指向的 JSON 文件
-            const eventData = fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8');
-
-// 解析 JSON 数据
-            const eventJson = JSON.parse(eventData);
-            // console.log(`eventData: ${eventData}`);
-// 获取 Pull Request 的源信息
-            const sourceBranch = eventJson.pull_request.head.ref;
-            const sourceRepo = eventJson.pull_request.head.repo.full_name;
-//             const sourceBranch = "master"
-//             const sourceRepo = "yinzhennantw/MyLeetCode"
-            const sourceOwner = sourceRepo.split('/').shift();
-            if (sourceOwner === owner) {
-                // todo 直接检查分支
-            }else{
-                // 克隆 fork 子项目
-                execSync(`git clone https://github.com/${sourceRepo}.git`);
-                // 进入子项目目录
-                process.chdir(`${sourceRepo.split('/').pop()}`);
-                // 检出指定分支
-                execSync(`git checkout ${sourceBranch}`);
-                // 新增remote
-                core.info(`owner: ${owner}`);
-                execSync(`git remote add ${owner} https://a:${PAT}@github.com/xuqiu/MyLeetCode.git`);
-                execSync(`git remote -v`);
-                // push临时分支
-                const temp_branch = 'temp-'+getTimestamp();
-                execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
-
-
-            }
-            core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
-            return
-        } else {
-            core.setFailed("本工具暂时只支持push/pull_request我");
-            return;
-        }
+//         //push事件直接扫描该分支
+//         if (process.env.GITHUB_EVENT_NAME === 'push') {
+//             // console.log('This is a push event.');
+//             core.setFailed("调试中,暂时跳过")
+//             return
+//         //pr事件,如果是同owner,扫描源分支,如果是fork项目,创建临时分支,扫描临时分支
+//         //最后根据扫描结果,给pr做标记
+//         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+//             core.info("222");
+//             core.info(`PAT: ${PAT}`);
+//             let parent_uid = core.getInput('parent_uid');
+//             core.info(`parent_uid: ${parent_uid}`);
+//             // 读取 GITHUB_EVENT_PATH 环境变量指向的 JSON 文件
+//             const eventData = fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8');
+//
+// // 解析 JSON 数据
+//             const eventJson = JSON.parse(eventData);
+//             // console.log(`eventData: ${eventData}`);
+// // 获取 Pull Request 的源信息
+//             const sourceBranch = eventJson.pull_request.head.ref;
+//             const sourceRepo = eventJson.pull_request.head.repo.full_name;
+// //             const sourceBranch = "master"
+// //             const sourceRepo = "yinzhennantw/MyLeetCode"
+//             const sourceOwner = sourceRepo.split('/').shift();
+//             if (sourceOwner === owner) {
+//                 // todo 直接检查分支
+//             }else{
+//                 // 克隆 fork 子项目
+//                 execSync(`git clone https://github.com/${sourceRepo}.git`);
+//                 // 进入子项目目录
+//                 process.chdir(`${sourceRepo.split('/').pop()}`);
+//                 // 检出指定分支
+//                 execSync(`git checkout ${sourceBranch}`);
+//                 // 新增remote
+//                 core.info(`owner: ${owner}`);
+//                 execSync(`git remote add ${owner} https://a:${PAT}@github.com/xuqiu/MyLeetCode.git`);
+//                 execSync(`git remote -v`);
+//                 // push临时分支
+//                 const temp_branch = 'temp-'+getTimestamp();
+//                 execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
+//
+//
+//             }
+//             core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
+//             return
+//         } else {
+//             core.setFailed("本工具暂时只支持push/pull_request我");
+//             return;
+//         }
         const spaceId = `600087`;
         let projectId;
         let templateId;
