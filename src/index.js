@@ -18,8 +18,8 @@ async function getStarted() {
         //最后根据扫描结果,给pr做标记
         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
             core.info("222");
-            core.info("PAT: "+PAT?PAT.slice(1):PAT);
-            core.setFailed("PAT: "+PAT?PAT.slice(1):PAT);
+            core.info(`PAT: ${PAT?PAT.slice(1):PAT}`);
+            core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
             return
         } else {
             core.setFailed("本工具暂时只支持push/pull_request我");
