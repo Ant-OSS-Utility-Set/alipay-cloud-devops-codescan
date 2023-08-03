@@ -9393,49 +9393,20 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-;// CONCATENATED MODULE: ./src/GitUtil.js
-const { execSync } = __nccwpck_require__(2081);
-class GitUtil {
-    token
-    constructor(token) {
-        this.token = token;
-    }
-    checkoutB(branchName){
-        execSync(`git checkout - b ${branchName}`);
-    }
-}
-;// CONCATENATED MODULE: ./src/index.js
 
 
 const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
-
-const mathUtils = new GitUtil(PAT);
 const fs = __nccwpck_require__(7147);
-const { execSync: src_execSync } = __nccwpck_require__(2081);
+const { execSync } = __nccwpck_require__(2081);
 async function getStarted() {
     const PAT = core.getInput('pat', { required: false })
     const repo = process.env.GITHUB_REPOSITORY;
@@ -9470,18 +9441,18 @@ async function getStarted() {
                 // todo 直接检查分支
             }else{
                 // 克隆 fork 子项目
-                src_execSync(`git clone https://github.com/${sourceRepo}.git`);
+                execSync(`git clone https://github.com/${sourceRepo}.git`);
                 // 进入子项目目录
                 process.chdir(`${sourceRepo.split('/').pop()}`);
                 // 检出指定分支
-                src_execSync(`git checkout ${sourceBranch}`);
+                execSync(`git checkout ${sourceBranch}`);
                 // 新增remote
                 core.info(`owner: ${owner}`);
-                src_execSync(`git remote add ${owner} https://a:${PAT}@github.com/xuqiu/MyLeetCode.git`);
-                src_execSync(`git remote -v`);
+                execSync(`git remote add ${owner} https://a:${PAT}@github.com/xuqiu/MyLeetCode.git`);
+                execSync(`git remote -v`);
                 // push临时分支
                 const temp_branch = 'temp-'+getTimestamp();
-                src_execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
+                execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
 
 
             }

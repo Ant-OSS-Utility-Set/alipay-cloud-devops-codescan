@@ -2,8 +2,6 @@
 
 const core = require('@actions/core');
 const axios = require('axios');
-import { GitUtil } from './GitUtil.js';
-const mathUtils = new GitUtil(PAT);
 const fs = require('fs');
 const { execSync } = require('child_process');
 async function getStarted() {
