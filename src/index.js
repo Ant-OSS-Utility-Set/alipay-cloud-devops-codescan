@@ -2,7 +2,6 @@
 
 const core = require('@actions/core');
 const axios = require('axios');
-const supportPrActions = ['opened', 'synchronize', 'reopened']
 import { GitUtil } from './GitUtil.js';
 const PAT = core.getInput('pat', { required: false })
 const mathUtils = new GitUtil(PAT);
@@ -17,19 +16,7 @@ async function getStarted() {
         //pr事件,如果是同owner,扫描源分支,如果是fork项目,创建临时分支,扫描临时分支
         //最后根据扫描结果,给pr做标记
         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
-            const eventDataPath = process.env.GITHUB_EVENT_PATH;
-            core.info("eventDataPath:"+eventDataPath);
-            const eventData = require(eventDataPath);
-            core.info("eventData:"+eventData);
-            const pullRequestAction = eventData.action;
-            core.info("pullRequestAction:"+pullRequestAction);
             core.info("PAT: "+PAT?PAT.slice(1):PAT);
-            if (! supportPrActions.includes(pullRequestAction) ){
-                core.setFailed(`pull_request只支持 ${supportPrActions}`);
-                return
-            }
-            console.log('Pull request action:', pullRequestAction);
-            core.info("pullRequestAction:"+pullRequestAction);
             return
         } else {
             core.setFailed("本工具暂时只支持push/pull_request我");
