@@ -9424,9 +9424,9 @@ async function getStarted() {
         //最后根据扫描结果,给pr做标记
         } else if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
             core.info("222");
-            core.info(`PAT: ${PAT.substring(-2)}`);
+            core.info(`PAT: ${PAT}`);
             let parent_uid = core.getInput('parent_uid');
-            core.info(`parent_uid: ${parent_uid.substring(-2)}`);
+            core.info(`parent_uid: ${parent_uid}`);
             // 读取 GITHUB_EVENT_PATH 环境变量指向的 JSON 文件
             const eventData = fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8');
 
