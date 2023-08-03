@@ -3,11 +3,11 @@
 const core = require('@actions/core');
 const axios = require('axios');
 import { GitUtil } from './GitUtil.js';
-const PAT = core.getInput('pat', { required: false })
 const mathUtils = new GitUtil(PAT);
 const fs = require('fs');
 const { execSync } = require('child_process');
 async function getStarted() {
+    const PAT = core.getInput('pat', { required: false })
     const repo = process.env.GITHUB_REPOSITORY;
     const branchRef = process.env.GITHUB_REF;
     const branchName = branchRef.split('/').pop();
