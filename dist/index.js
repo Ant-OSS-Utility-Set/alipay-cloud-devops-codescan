@@ -9475,6 +9475,12 @@ async function getStarted() {
                 process.chdir(`${sourceRepo.split('/').pop()}`);
                 // 检出指定分支
                 src_execSync(`git checkout ${sourceBranch}`);
+                // 新增remote
+                src_execSync(`git add remote ${owner} git@github.com:${repo}.git`);
+                // push临时分支
+                const temp_branch = 'temp-'+getTimestamp();
+                src_execSync(`git push ${owner} ${sourceBranch}:${temp_branch}`);
+
 
             }
             core.setFailed(`PAT: ${PAT?PAT.slice(1):PAT}`);
@@ -9566,6 +9572,16 @@ async function getStarted() {
 }
 function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+function getTimestamp(){
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const day = ('0' + now.getDate()).slice(-2);
+    const hours = ('0' + now.getHours()).slice(-2);
+    const minutes = ('0' + now.getMinutes()).slice(-2);
+    const seconds = ('0' + now.getSeconds()).slice(-2);
+    return year + month + day + hours + minutes + seconds;
 }
 let notCare = getStarted();
 
