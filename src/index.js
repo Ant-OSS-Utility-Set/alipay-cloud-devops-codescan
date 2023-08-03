@@ -10,6 +10,12 @@ async function getStarted() {
     const branchRef = process.env.GITHUB_REF;
     const branchName = branchRef.split('/').pop();
     const owner = repo.split('/').shift();
+
+    core.info(`PAT: ${PAT}`);
+    let parent_uid = core.getInput('parent_uid');
+    core.info(`parent_uid: ${parent_uid}`);
+
+
     try {
         core.info("1111");
 //         //push事件直接扫描该分支
