@@ -2,28 +2,17 @@
 
 const core = require('@actions/core');
 const axios = require('axios');
+const jobProcessors = require('./jobprocessors/processors');
+const repoTemplates = require('./config');
 
 async function getStarted() {
+    let failed = false;
     try {
         const spaceId = `600087`;
-        let projectId;
-        let templateId;
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         const branchName = branchRef.split('/').pop();
-        switch (repo){
-            case "xuqiu/MyLeetCode":
-                projectId = "5000012";
-                templateId = 795;
-                break;
-            case "sofastack/sofa-rpc":
-                projectId = "5600832";
-                templateId = 5600545;
-                break;
-            default:
-                core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
-        }
-
+        const {projectId, templateId} = repoTemplates[repo]
 
         //1,获取token
         core.info("starting...")
@@ -32,17 +21,30 @@ async function getStarted() {
                 "parent_uid": core.getInput('parent_uid', { required: true }),
                 "private_key": core.getInput('private_key', { required: true }),
             })
-        //2,调用代码检查
         const headers = {
             'Authorization': `Bearer ${tokenResponse.data.data.access_token}`,
             'x-node-id': '14955076510547972'
         };
+        //2,调用代码检查
         const triggerResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`,
          {"templateId":templateId,"branch":`${branchName}`},
         { headers: headers }
         );
         const recordId = triggerResponse.data.result.recordId;
-        // const recordId = 5700008;
+
+
+        // sca-licence
+        // projectId = 5603361;
+        // let recordId = 5705341;
+
+        //sca-code
+        // projectId = 293;
+        // let recordId = 5703971;
+
+        //stc
+        // projectId = 5000012;
+        // let recordId = 5702474;
+
         //3,循环获取recordInfo
         core.info("scanning...")
         let recordResponse;
@@ -58,35 +60,25 @@ async function getStarted() {
             await sleep(10);
         }
         core.info("scan finished")
-        let result = recordResponse.data.result.result;
-
-
-        if (result === 'PASSED') {
-            core.setOutput("result","PASSED")
-            return;
-        }
-
+        let recordResult = recordResponse.data.result;
         core.info("getting info...")
         //获取失败的job, 获取失败信息
-        const failureStage = recordResponse.data.result.stageExecutions.find(stage => stage.result === 'FAILURE');
-        const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
-        const jobId = failureJob.id;
-        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
-            {headers: headers}
-        );
-        const highAndUrgent = [...JSON.parse(jobResponse.data.result.data.high), ...JSON.parse(jobResponse.data.result.data.urgent)];
-        if (highAndUrgent.length === 0) {
-            core.setOutput("result","PASSED")
-            return;
-        }
-        const titleList = highAndUrgent.map(item => item.title);
-        for (const errorMessage of titleList) {
-            core.setFailed(errorMessage)
-        }
 
+        const allFailureJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions)
+            .filter(item => item.componentName === 'codescan-sca' || item.result === 'FAILURE');
+
+        for (const failureJob of allFailureJobs) {
+            const jobId = failureJob.id;
+            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
+                {headers: headers}
+            );
+            const jobDetail = jobResponse.data.result.data;
+            failed = jobProcessors[failureJob.componentName](jobDetail) || failed;
+        }
     } catch (error) {
         core.setFailed(error.message);
     }
+    core.setOutput("result",failed?"FAILED":"PASSED")
 }
 function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));

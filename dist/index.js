@@ -4979,6 +4979,117 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 4570:
+/***/ ((module) => {
+
+const repoTemplates = {
+    "xuqiu/MyLeetCode": {
+        projectId: "5000012",
+        templateId: 795
+    },
+    "xuqiu/layotto": {
+        projectId: "293",
+        templateId: 378
+    },
+    "xuqiu/public-apis": {
+        projectId: "5603361",
+        templateId: 5603652
+    },
+//以上为测试项目
+    "sofastack/sofa-rpc": {
+        projectId: "5600832",
+        templateId: 5600545
+    }
+}
+
+module.exports = repoTemplates;
+
+/***/ }),
+
+/***/ 4456:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+
+/**
+ * 处理开源合规的扫描结果 返回ture表示有报错
+ * 警告:
+ *   1. 代码相似度过高
+ * 报错:
+ *   1. 存在licence冲突
+ */
+function process(jobDetail){
+    const artifacts = JSON.parse(jobDetail.artifacts);
+    const licence = artifacts.license;
+    let failed = false
+
+    //licence冲突 报错
+    const licenceText = JSON.parse(licence.text);
+    if (licenceText.compatibility === false) {
+        Object.entries(licenceText.conflictingLicense).forEach(([licenceName, component]) => {
+            if (licenceName === "") {
+                return;
+            }
+            const [componentName, version] = Object.entries(component)[0];
+            core.setFailed(`请注意, 项目依赖的 ${componentName}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
+            failed = true;
+        });
+    }
+    //code相似 警告
+    const code = artifacts.code;
+    const codeText = JSON.parse(code.text);
+    Object.entries(codeText).forEach(([fileName, conflictRepo]) => {
+        core.warning(`请注意, 您的代码 ${fileName} 与 开源项目 ${conflictRepo[0].name}:${conflictRepo[0].version} 的文件: ${conflictRepo[0].downloadUrl} 相似度: ${conflictRepo[0].score}`)
+    });
+    return ! licenceText.compatibility;
+}
+module.exports = process;
+
+/***/ }),
+
+/***/ 7754:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const stcProcessor = __nccwpck_require__(9001)
+const codescanScaProcessor = __nccwpck_require__(4456)
+const jobProcessors = {
+    "stc": stcProcessor,
+    "codescan-sca": codescanScaProcessor
+}
+module.exports = jobProcessors;
+
+/***/ }),
+
+/***/ 9001:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+
+/**
+ * 处理安全扫描里的安全风险 返回ture表示有报错
+ * 报错:
+ *   1. high/urgent 级别的安全隐患
+ * 警告:
+ *   1. low/medium/warn 级别的安全隐患
+ */
+function process(jobDetail){
+    console.log("stc processor")
+    //高等级 报错
+    const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
+    highAndUrgent.map(item => item.title).forEach(errorMessage=>{
+        core.setFailed(errorMessage)
+    });
+    //低等级 警告
+    const warningRisks = [...JSON.parse(jobDetail.low), ...JSON.parse(jobDetail.medium), ...JSON.parse(jobDetail.warn)];
+    warningRisks.map(item => item.title).forEach(errorMessage=>{
+        core.warning(errorMessage)
+    });
+    return highAndUrgent.length > 0;
+}
+module.exports = process;
+
+/***/ }),
+
 /***/ 9975:
 /***/ ((module) => {
 
@@ -9397,28 +9508,17 @@ var __webpack_exports__ = {};
 
 const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
+const jobProcessors = __nccwpck_require__(7754);
+const repoTemplates = __nccwpck_require__(4570);
 
 async function getStarted() {
+    let failed = false;
     try {
         const spaceId = `600087`;
-        let projectId;
-        let templateId;
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         const branchName = branchRef.split('/').pop();
-        switch (repo){
-            case "xuqiu/MyLeetCode":
-                projectId = "5000012";
-                templateId = 795;
-                break;
-            case "sofastack/sofa-rpc":
-                projectId = "5600832";
-                templateId = 5600545;
-                break;
-            default:
-                core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
-        }
-
+        const {projectId, templateId} = repoTemplates[repo]
 
         //1,获取token
         core.info("starting...")
@@ -9427,17 +9527,30 @@ async function getStarted() {
                 "parent_uid": core.getInput('parent_uid', { required: true }),
                 "private_key": core.getInput('private_key', { required: true }),
             })
-        //2,调用代码检查
         const headers = {
             'Authorization': `Bearer ${tokenResponse.data.data.access_token}`,
             'x-node-id': '14955076510547972'
         };
+        //2,调用代码检查
         const triggerResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`,
          {"templateId":templateId,"branch":`${branchName}`},
         { headers: headers }
         );
         const recordId = triggerResponse.data.result.recordId;
-        // const recordId = 5700008;
+
+
+        // sca-licence
+        // projectId = 5603361;
+        // let recordId = 5705341;
+
+        //sca-code
+        // projectId = 293;
+        // let recordId = 5703971;
+
+        //stc
+        // projectId = 5000012;
+        // let recordId = 5702474;
+
         //3,循环获取recordInfo
         core.info("scanning...")
         let recordResponse;
@@ -9453,35 +9566,25 @@ async function getStarted() {
             await sleep(10);
         }
         core.info("scan finished")
-        let result = recordResponse.data.result.result;
-
-
-        if (result === 'PASSED') {
-            core.setOutput("result","PASSED")
-            return;
-        }
-
+        let recordResult = recordResponse.data.result;
         core.info("getting info...")
         //获取失败的job, 获取失败信息
-        const failureStage = recordResponse.data.result.stageExecutions.find(stage => stage.result === 'FAILURE');
-        const failureJob = failureStage.jobExecutions.find(job => job.result === 'FAILURE');
-        const jobId = failureJob.id;
-        const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
-            {headers: headers}
-        );
-        const highAndUrgent = [...JSON.parse(jobResponse.data.result.data.high), ...JSON.parse(jobResponse.data.result.data.urgent)];
-        if (highAndUrgent.length === 0) {
-            core.setOutput("result","PASSED")
-            return;
-        }
-        const titleList = highAndUrgent.map(item => item.title);
-        for (const errorMessage of titleList) {
-            core.setFailed(errorMessage)
-        }
 
+        const allFailureJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions)
+            .filter(item => item.componentName === 'codescan-sca' || item.result === 'FAILURE');
+
+        for (const failureJob of allFailureJobs) {
+            const jobId = failureJob.id;
+            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
+                {headers: headers}
+            );
+            const jobDetail = jobResponse.data.result.data;
+            failed = jobProcessors[failureJob.componentName](jobDetail) || failed;
+        }
     } catch (error) {
         core.setFailed(error.message);
     }
+    core.setOutput("result",failed?"FAILED":"PASSED")
 }
 function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
