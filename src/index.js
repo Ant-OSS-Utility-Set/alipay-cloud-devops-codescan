@@ -12,7 +12,7 @@ async function getStarted() {
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         const branchName = branchRef.split('/').pop();
-        const {projectId, templateId} = repoTemplates[repo]
+        let {projectId, templateId} = repoTemplates[repo]
 
         //1,获取token
         core.info("starting...")
@@ -35,7 +35,7 @@ async function getStarted() {
 
         // sca-licence
         // projectId = 5603361;
-        // let recordId = 5705341;
+        // let recordId = 5705361;
 
         //sca-code
         // projectId = 293;
