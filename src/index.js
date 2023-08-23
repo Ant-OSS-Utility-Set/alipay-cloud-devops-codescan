@@ -35,7 +35,7 @@ async function getStarted() {
          {"templateId":templateId,"branch":`${branchName}`},
         { headers: headers }
         );
-        core.debug("triggerResponse: "+JSON.stringify(triggerResponse));
+        core.debug("triggerResponse: "+JSON.stringify(triggerResponse.data));
         const recordId = triggerResponse.data.result.recordId;
 
 
