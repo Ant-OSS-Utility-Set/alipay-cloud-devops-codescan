@@ -12,8 +12,8 @@ const repoTemplates = {
         templateId: 5603652
     },
     "xuqiu/sofa-rpc": {
-        projectId: "5600832",
-        templateId: 5600545
+        projectId: "5604129",
+        templateId: 5604647
     },
 //以上为测试项目
     "sofastack/sofa-rpc": {
