@@ -9518,7 +9518,12 @@ async function getStarted() {
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         const branchName = branchRef.split('/').pop();
-        const {projectId, templateId} = repoTemplates[repo]
+        if (! repoTemplates[repo]){
+            core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
+            core.setOutput("result","FAILED")
+            return;
+        }
+        let {projectId, templateId} = repoTemplates[repo]
 
         //1,获取token
         core.info("starting...")
@@ -9541,7 +9546,7 @@ async function getStarted() {
 
         // sca-licence
         // projectId = 5603361;
-        // let recordId = 5705341;
+        // let recordId = 5705361;
 
         //sca-code
         // projectId = 293;

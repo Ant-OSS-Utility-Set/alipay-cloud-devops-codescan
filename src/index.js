@@ -12,6 +12,11 @@ async function getStarted() {
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         const branchName = branchRef.split('/').pop();
+        if (! repoTemplates[repo]){
+            core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
+            core.setOutput("result","FAILED")
+            return;
+        }
         let {projectId, templateId} = repoTemplates[repo]
 
         //1,获取token
