@@ -5024,7 +5024,7 @@ const core = __nccwpck_require__(2186);
  */
 function process(jobDetail){
     core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
-    if (jobDetail.state !== "FINISHED") {
+    if (jobDetail.state !== "Success") {
         core.warning("开源合规组件 执行失败 或 超时未完成!")
     }
     const artifacts = JSON.parse(jobDetail.artifacts);
