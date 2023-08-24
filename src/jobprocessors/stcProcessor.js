@@ -8,7 +8,6 @@ const core = require("@actions/core");
  *   1. low/medium/warn 级别的安全隐患
  */
 function process(jobDetail){
-    console.log("stc processor")
     //高等级 报错
     const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
     highAndUrgent.map(item => item.title).forEach(errorMessage=>{

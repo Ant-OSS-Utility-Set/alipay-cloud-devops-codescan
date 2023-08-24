@@ -5023,6 +5023,7 @@ const core = __nccwpck_require__(2186);
  *   1. 存在licence冲突
  */
 function process(jobDetail){
+    core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
     const artifacts = JSON.parse(jobDetail.artifacts);
     const licence = artifacts.license;
     let failed = false
@@ -5077,7 +5078,6 @@ const core = __nccwpck_require__(2186);
  *   1. low/medium/warn 级别的安全隐患
  */
 function process(jobDetail){
-    console.log("stc processor")
     //高等级 报错
     const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
     highAndUrgent.map(item => item.title).forEach(errorMessage=>{
@@ -9557,9 +9557,9 @@ async function getStarted() {
         // projectId = 293;
         // let recordId = 5703971;
 
-        //stc
-        // projectId = 5000012;
-        // let recordId = 5702474;
+        // stc
+        // projectId = 5604129;
+        // let recordId = 5705537;
 
         //3,循环获取recordInfo
         core.info("scanning...")
@@ -9578,6 +9578,7 @@ async function getStarted() {
         core.info("scan finished")
         let recordResult = recordResponse.data.result;
         core.info("getting info...")
+        core.debug("recordResponse.data: " + recordResponse.data)
         //获取失败的job, 获取失败信息
 
         const allFailureJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions)
@@ -9588,6 +9589,7 @@ async function getStarted() {
             const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
                 {headers: headers}
             );
+            core.debug("jobResponse.data: " + jobResponse.data)
             const jobDetail = jobResponse.data.result.data;
             failed = jobProcessors[failureJob.componentName](jobDetail) || failed;
         }

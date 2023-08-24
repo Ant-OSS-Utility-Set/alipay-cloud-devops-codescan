@@ -8,6 +8,7 @@ const core = require("@actions/core");
  *   1. 存在licence冲突
  */
 function process(jobDetail){
+    core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
     const artifacts = JSON.parse(jobDetail.artifacts);
     const licence = artifacts.license;
     let failed = false
