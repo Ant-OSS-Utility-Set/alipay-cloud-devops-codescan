@@ -5024,8 +5024,8 @@ const core = __nccwpck_require__(2186);
  */
 function process(jobDetail){
     core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
-    if (jobDetail.state === "Failed") {
-        core.warning("开源合规组件执行失败")
+    if (jobDetail.state != "FINISHED") {
+        core.warning("开源合规组件 执行失败 或 超时未完成!")
     }
     const artifacts = JSON.parse(jobDetail.artifacts);
     const licence = artifacts.license;
@@ -9568,7 +9568,8 @@ async function getStarted() {
         core.info("scanning...")
         let recordResponse;
         let status = "";
-        for (let i = 0; i < 30; i++) {
+        const timeout = 20//minutes
+        for (let i = 0; i < timeout*6; i++) {
             recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`,
                 {headers: headers}
             );

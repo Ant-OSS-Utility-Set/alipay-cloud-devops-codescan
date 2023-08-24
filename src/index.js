@@ -55,7 +55,8 @@ async function getStarted() {
         core.info("scanning...")
         let recordResponse;
         let status = "";
-        for (let i = 0; i < 30; i++) {
+        const timeout = 20//minutes
+        for (let i = 0; i < timeout*6; i++) {
             recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`,
                 {headers: headers}
             );
