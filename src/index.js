@@ -72,17 +72,19 @@ async function getStarted() {
         core.debug("recordResponse.data: " + JSON.stringify(recordResponse.data))
         //获取失败的job, 获取失败信息
 
-        const allFailureJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions)
-            .filter(item => item.componentName === 'codescan-sca' || item.result === 'FAILURE');
+        const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
 
-        for (const failureJob of allFailureJobs) {
+        for (const failureJob of allJobs) {
             const jobId = failureJob.id;
             const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
                 {headers: headers}
             );
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const jobDetail = jobResponse.data.result.data;
-            failed = jobProcessors[failureJob.componentName](jobDetail) || failed;
+            const jobProcessor = jobProcessors[failureJob.componentName];
+            if (jobProcessor){
+                failed = jobProcessor(jobDetail) || failed;
+            }
         }
     } catch (error) {
         core.setFailed(error.message);
