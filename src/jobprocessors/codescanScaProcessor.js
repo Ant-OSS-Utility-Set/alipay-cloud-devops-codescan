@@ -9,6 +9,9 @@ const core = require("@actions/core");
  */
 function process(jobDetail){
     core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
+    if (jobDetail.state === "Failed") {
+        core.warning("开源合规组件执行失败")
+    }
     const artifacts = JSON.parse(jobDetail.artifacts);
     const licence = artifacts.license;
     let failed = false
