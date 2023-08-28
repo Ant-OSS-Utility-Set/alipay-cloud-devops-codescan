@@ -9525,7 +9525,8 @@ async function getStarted() {
         const repo = process.env.GITHUB_REPOSITORY;
         const branchRef = process.env.GITHUB_REF;
         core.debug("branchRef: " + branchRef)
-        const branchName = branchRef.split('/').pop();
+        const branchName = branchRef.replace('refs/heads/','')
+        core.debug("branchName: " + branchRef)
         if (! repoTemplates[repo]){
             core.setFailed(`该项目暂未配置,请联系管理员! 项目信息: ${repo}`)
             core.setOutput("result","FAILED")
