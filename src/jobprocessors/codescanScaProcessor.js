@@ -10,7 +10,8 @@ const core = require("@actions/core");
 function process(jobDetail){
     core.debug("jobDetail.artifacts:"+jobDetail.artifacts)
     if (jobDetail.state !== "Success") {
-        core.warning("开源合规组件 执行失败 或 超时未完成!")
+        core.error("开源合规组件 执行失败 或 超时未完成!")
+        return true
     }
     const artifacts = JSON.parse(jobDetail.artifacts);
     const licence = artifacts.license;
