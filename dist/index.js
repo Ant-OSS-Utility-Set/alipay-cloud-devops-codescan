@@ -5090,7 +5090,7 @@ function process(jobDetail){
             errorMessage += `\n文件: ${risk.filePath}`
         }
         if (risk.description) {
-            errorMessage += `\n细节/建议: ${risk.description}`
+            errorMessage += `\n细节/建议:\n${risk.description}`
         }
         if (['high','urgent'].includes(risk.rank)){
             hasError = true;
