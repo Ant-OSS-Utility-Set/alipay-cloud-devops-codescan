@@ -5103,7 +5103,7 @@ function process(jobDetail){
             errorMessage += `\n文件: ${risk.filePath}`
         }
         if (risk.description) {
-            errorMessage += `\n修复建议: ${risk.description}`
+            errorMessage += `\n细节/建议: ${risk.description}`
         }
         core.warning(errorMessage);
     });
