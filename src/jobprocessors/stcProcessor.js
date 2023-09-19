@@ -11,24 +11,26 @@ function process(jobDetail){
     //高等级 报错
     const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
     highAndUrgent.forEach(risk=>{
-        core.setFailed((risk.title))
+        let errorMessage = risk.title;
         if (risk.filePath) {
-            core.setFailed(`文件: ${risk.filePath}`);
+            errorMessage += `\n文件: ${risk.filePath}`
         }
         if (risk.description) {
-            core.setFailed(`修复建议: ${risk.description}`);
+            errorMessage += `修复建议: ${risk.description}`
         }
+        core.setFailed(errorMessage);
     });
     //低等级 警告
     const warningRisks = [...JSON.parse(jobDetail.low), ...JSON.parse(jobDetail.medium), ...JSON.parse(jobDetail.warn)];
     warningRisks.forEach(risk=>{
-        core.warning(risk.title);
+        let errorMessage = risk.title;
         if (risk.filePath) {
-            core.warning(`文件: ${risk.filePath}`);
+            errorMessage += `\n文件: ${risk.filePath}`
         }
         if (risk.description) {
-            core.warning(`修复建议: ${risk.description}`);
+            errorMessage += `修复建议: ${risk.description}`
         }
+        core.warning(errorMessage);
     });
     return highAndUrgent.length > 0;
 }
