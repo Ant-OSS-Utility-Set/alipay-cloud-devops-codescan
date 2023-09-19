@@ -4997,7 +4997,8 @@ const repoTemplates = {
     },
     "xuqiu/sofa-rpc": {
         projectId: "5604129",
-        templateId: 5604647
+        // templateId: 5604647 //安全+开源
+        templateId: 9805087 //仅安全扫描
     },
 //以上为测试项目
     "sofastack/sofa-rpc": {
@@ -5084,13 +5085,25 @@ const core = __nccwpck_require__(2186);
 function process(jobDetail){
     //高等级 报错
     const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
-    highAndUrgent.map(item => item.title).forEach(errorMessage=>{
-        core.setFailed(errorMessage)
+    highAndUrgent.forEach(risk=>{
+        core.setFailed((risk.title))
+        if (risk.filePath) {
+            core.setFailed(`文件: ${risk.filePath}`);
+        }
+        if (risk.description) {
+            core.setFailed(`修复建议: ${risk.description}`);
+        }
     });
     //低等级 警告
     const warningRisks = [...JSON.parse(jobDetail.low), ...JSON.parse(jobDetail.medium), ...JSON.parse(jobDetail.warn)];
-    warningRisks.map(item => item.title).forEach(errorMessage=>{
-        core.warning(errorMessage)
+    warningRisks.forEach(risk=>{
+        core.warning(risk.title);
+        if (risk.filePath) {
+            core.warning(`文件: ${risk.filePath}`);
+        }
+        if (risk.description) {
+            core.warning(`修复建议: ${risk.description}`);
+        }
     });
     return highAndUrgent.length > 0;
 }

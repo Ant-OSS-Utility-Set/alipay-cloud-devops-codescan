@@ -10,13 +10,25 @@ const core = require("@actions/core");
 function process(jobDetail){
     //高等级 报错
     const highAndUrgent = [...JSON.parse(jobDetail.high), ...JSON.parse(jobDetail.urgent)];
-    highAndUrgent.map(item => item.title).forEach(errorMessage=>{
-        core.setFailed(errorMessage)
+    highAndUrgent.forEach(risk=>{
+        core.setFailed((risk.title))
+        if (risk.filePath) {
+            core.setFailed(`文件: ${risk.filePath}`);
+        }
+        if (risk.description) {
+            core.setFailed(`修复建议: ${risk.description}`);
+        }
     });
     //低等级 警告
     const warningRisks = [...JSON.parse(jobDetail.low), ...JSON.parse(jobDetail.medium), ...JSON.parse(jobDetail.warn)];
-    warningRisks.map(item => item.title).forEach(errorMessage=>{
-        core.warning(errorMessage)
+    warningRisks.forEach(risk=>{
+        core.warning(risk.title);
+        if (risk.filePath) {
+            core.warning(`文件: ${risk.filePath}`);
+        }
+        if (risk.description) {
+            core.warning(`修复建议: ${risk.description}`);
+        }
     });
     return highAndUrgent.length > 0;
 }

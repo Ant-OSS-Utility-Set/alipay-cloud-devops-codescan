@@ -13,7 +13,8 @@ const repoTemplates = {
     },
     "xuqiu/sofa-rpc": {
         projectId: "5604129",
-        templateId: 5604647
+        // templateId: 5604647 //安全+开源
+        templateId: 9805087 //仅安全扫描
     },
 //以上为测试项目
     "sofastack/sofa-rpc": {
