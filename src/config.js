@@ -7,10 +7,13 @@ const repoTemplates = {
         projectId: "293",
         templateId: 378
     },
-    "xuqiu/public-apis": {
-        projectId: "5603361",
-        templateId: 5603652
-    },
+    "xuqiu/public-apis": [{
+        projectId: "568",
+        templateId: 782
+    },{
+        projectId: "568",
+        templateId: 783
+    }],
     "xuqiu/sofa-rpc": {
         projectId: "5604129",
         // templateId: 5604647 //安全+开源
