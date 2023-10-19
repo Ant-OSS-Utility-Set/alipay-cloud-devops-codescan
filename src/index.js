@@ -5,12 +5,12 @@ const jobProcessors = require('./jobprocessors/processors');
 async function getStarted(templateId, branch, codeRepo) {
     let failed = false;
     try {
-        const spaceId = `47`;
-        const projectId = `568`;
+        const spaceId = `600087`;
+        const projectId = `5603361`;
 
         // 1. 获取token
         core.info("开始...");
-        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.run.alipay.net/v2/login/serviceaccount', {
+        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
             "parent_uid": core.getInput('parent_uid', { required: true }),
             "private_key": core.getInput('private_key', { required: true }),
         });
@@ -19,12 +19,12 @@ async function getStarted(templateId, branch, codeRepo) {
         // 设置请求头
         const headers = {
             'Authorization': `Bearer ${token}`,
-            'x-node-id': '17124406274852513',
+            'x-node-id': '14955076510547972',
             'Content-Type': 'application/json'
         };
 
         // 2. 调用代码检查
-        const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.run.alipay.net/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute?projectId=${projectId}&spaceId=${spaceId}`, {
+        const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`, {
             "templateId": templateId,
             "branch": branch,
             "codeRepo": codeRepo
@@ -39,7 +39,7 @@ async function getStarted(templateId, branch, codeRepo) {
         let status = "";
         const timeout = 20; // 分钟
         for (let i = 0; i < timeout * 6; i++) {
-            const recordResponse = await axios.get(`https://tdevstudio.openapi.run.alipay.net/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+            const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
                 headers: headers
             });
 
