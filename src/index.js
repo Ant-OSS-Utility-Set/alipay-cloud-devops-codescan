@@ -27,7 +27,7 @@ async function getStarted(branch, codeRepo) {
         };
 
         // Set templateId based on codeType
-        const codeType = core.getInput('codeType');
+        const codeType = core.getInput('codeType',{ required: true });
         let templateId;
         if (codeType === "sca") {
             templateId = 5603652;
