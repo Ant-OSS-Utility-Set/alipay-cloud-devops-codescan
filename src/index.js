@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
 
-async function getStarted(templateId, branch, codeRepo, codeType) {
+async function getStarted(branch, codeRepo, codeType) {
     let failed = false;
     try {
         const spaceId = `600087`;
@@ -23,9 +23,20 @@ async function getStarted(templateId, branch, codeRepo, codeType) {
             'Content-Type': 'application/json'
         };
 
+        // Set templateId based on codeType
+        let templateId;
+        if (codeType === "sca") {
+            templateId = 5603652;
+        } else if (codeType === "stc") {
+            templateId = 9809103;
+        } else {
+            core.error("错误：无效的codeType");
+            return;
+        }
+
         // 2. 调用代码检查
         const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`, {
-            "templateId": codeType === "sca" ? 5603652 : codeType === "stc" ? 9809103 : templateId,
+            "templateId": templateId,
             "branch": branch,
             "codeRepo": codeRepo
         }, {
@@ -38,7 +49,7 @@ async function getStarted(templateId, branch, codeRepo, codeType) {
         let status = "";
         const timeout = 20; // 分钟
         for (let i = 0; i < timeout * 6; i++) {
-            const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
+            const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
                 headers: headers
             });
             status = recordResponse.data.result.status;
@@ -51,9 +62,10 @@ async function getStarted(templateId, branch, codeRepo, codeType) {
         core.info("扫描完成");
 
         // 获取失败的job, 获取失败信息
-        const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+        const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
             headers: headers
         });
+        core.debug("recordResponse: "+JSON.stringify(recordResponse.data));
         const recordResult = recordResponse.data.result;
         const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
         for (const failureJob of allJobs) {
@@ -79,9 +91,8 @@ function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
-// 从参数获取templateId、branch和codeRepo
-const templateId = process.env.INPUT_TEMPLATE_ID;
+// 从参数获取branch和codeRepo
 const branch = process.env.INPUT_BRANCH;
 const codeRepo = process.env.INPUT_CODE_REPO;
 const codeType = process.env.INPUT_CODE_TYPE;
-let notCare = getStarted(templateId, branch, codeRepo, codeType);
+let notCare = getStarted(branch, codeRepo, codeType);
