@@ -7,6 +7,9 @@ inputs:
     private_key:  # id of input
         description: 'another param to get token'
         required: true
+    code_type: # id of input
+        description: 'another param to get token'
+        required: true
 outputs:
     result: # id of output
         description: 'code scan passed or not'
