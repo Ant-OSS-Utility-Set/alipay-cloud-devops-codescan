@@ -51,14 +51,14 @@ async function getStarted(templateId, branch, codeRepo, codeType) {
         core.info("扫描完成");
 
         // 获取失败的job, 获取失败信息
-        const recordResponse = await axios.get(`https://tdevstudio.openapi.run.alipay.net/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+        const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
             headers: headers
         });
         const recordResult = recordResponse.data.result;
         const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
         for (const failureJob of allJobs) {
             const jobId = failureJob.id;
-            const jobResponse = await axios.get(`https://tdevstudio.openapi.run.alipay.net/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
+            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
                 headers: headers
             });
             const jobDetail = jobResponse.data.result.data;
