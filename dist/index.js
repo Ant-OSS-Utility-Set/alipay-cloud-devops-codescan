@@ -32588,12 +32588,11 @@ async function getStarted(branch, codeRepo, codeType) {
             const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
                 headers: headers
             });
+            core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
-            if (jobDetail && jobDetail.high) {
+            if (jobDetail) {
                 failed = jobProcessor(jobDetail) || failed;
-            } else {
-                console.error("错误：'high' 属性为 null 或在 jobDetail 对象中不可用。");
             }
         }
     } catch (error) {
