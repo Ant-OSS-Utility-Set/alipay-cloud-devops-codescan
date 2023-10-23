@@ -32556,6 +32556,7 @@ async function getStarted(branch, codeRepo, codeType) {
         }, {
             headers: headers
         });
+        core.debug("pipelineExecuteResponse: "+JSON.stringify(pipelineExecuteResponse.data));
         const recordId = pipelineExecuteResponse.data.result.recordId;
 
         // 3. 循环获取recordInfo
