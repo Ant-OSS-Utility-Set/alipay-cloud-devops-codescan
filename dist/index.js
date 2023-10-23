@@ -32516,7 +32516,7 @@ const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
 const jobProcessors = __nccwpck_require__(7754);
 
-async function getStarted(branch, codeRepo) {
+async function getStarted(branch, codeRepo, codeType) {
     let failed = false;
     try {
         const spaceId = `600087`;
@@ -32524,24 +32524,20 @@ async function getStarted(branch, codeRepo) {
 
         // 1. 获取token
         core.info("开始...");
-        const tokenResponse = await axios.post(
-            'https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount',
-            {
-                parent_uid: core.getInput('parent_uid', { required: true }),
-                private_key: core.getInput('private_key', { required: true }),
-            }
-        );
+        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
+            "parent_uid": core.getInput('parent_uid', { required: true }),
+            "private_key": core.getInput('private_key', { required: true }),
+        });
         const token = tokenResponse.data.data.access_token;
 
         // 设置请求头
         const headers = {
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
             'x-node-id': '14955076510547972',
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         };
 
         // Set templateId based on codeType
-        const codeType = core.getInput('codeType',{ required: true });
         let templateId;
         if (codeType === "sca") {
             templateId = 5603652;
@@ -32553,17 +32549,13 @@ async function getStarted(branch, codeRepo) {
         }
 
         // 2. 调用代码检查
-        const pipelineExecuteResponse = await axios.post(
-            `https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`,
-            {
-                templateId: templateId,
-                branch: branch,
-                codeRepo: codeRepo,
-            },
-            {
-                headers: headers,
-            }
-        );
+        const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`, {
+            "templateId": templateId,
+            "branch": branch,
+            "codeRepo": codeRepo
+        }, {
+            headers: headers
+        });
         const recordId = pipelineExecuteResponse.data.result.recordId;
 
         // 3. 循环获取recordInfo
@@ -32571,12 +32563,9 @@ async function getStarted(branch, codeRepo) {
         let status = "";
         const timeout = 20; // 分钟
         for (let i = 0; i < timeout * 6; i++) {
-            const recordResponse = await axios.get(
-                `https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`,
-                {
-                    headers: headers,
-                }
-            );
+            const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+                headers: headers
+            });
             status = recordResponse.data.result.status;
             if (status === "FINISHED") {
                 break;
@@ -32585,34 +32574,25 @@ async function getStarted(branch, codeRepo) {
         }
 
         core.info("扫描完成");
+
         // 获取失败的job, 获取失败信息
-        const recordResponse = await axios.get(
-            `https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`,
-            {
-                headers: headers,
-            }
-        );
-        core.debug("recordResponse: " + JSON.stringify(recordResponse.data));
+        const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+            headers: headers
+        });
+        core.debug("recordResponse.data: " + JSON.stringify(recordResponse.data))
         const recordResult = recordResponse.data.result;
-        const allJobs = recordResult.stageExecutions.flatMap(
-            (stage) => stage.jobExecutions
-        );
+        const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
         for (const failureJob of allJobs) {
             const jobId = failureJob.id;
-            const jobResponse = await axios.get(
-                `https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`,
-                {
-                    headers: headers,
-                }
-            );
+            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
+                headers: headers
+            });
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobDetail && jobDetail.high) {
                 failed = jobProcessor(jobDetail) || failed;
             } else {
-                console.error(
-                    "错误：'high' 属性为 null 或在 jobDetail 对象中不可用。"
-                );
+                console.error("错误：'high' 属性为 null 或在 jobDetail 对象中不可用。");
             }
         }
     } catch (error) {
@@ -32622,15 +32602,14 @@ async function getStarted(branch, codeRepo) {
 }
 
 function sleep(seconds) {
-    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
 // 从参数获取branch和codeRepo
-const branch = process.env.GITHUB_REF.split('/')[2];
-const codeRepo = process.env.GITHUB_REPOSITORY;
-
-getStarted(branch, codeRepo);
-
+const branch = process.env.INPUT_BRANCH;
+const codeRepo = process.env.INPUT_CODE_REPO;
+const codeType = process.env.INPUT_CODE_TYPE;
+let notCare = getStarted(branch, codeRepo, codeType);
 })();
 
 module.exports = __webpack_exports__;
