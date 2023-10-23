@@ -94,6 +94,6 @@ function sleep(seconds) {
 
 // 从参数获取branch和codeRepo
 const branch = process.env.GITHUB_REF;
-const codeRepo = process.env.GITHUB_REPOSITORY;
+const codeRepo = "https://github.com/"+ process.env.GITHUB_REPOSITORY + ".git";
 const codeType = process.env.INPUT_CODE_TYPE;
 let notCare = getStarted(branch, codeRepo, codeType);
