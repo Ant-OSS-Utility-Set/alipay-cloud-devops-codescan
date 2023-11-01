@@ -75,6 +75,7 @@ async function getStarted(branch, codeRepo, codeType) {
                 headers: headers
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
+            core.setFailed(`详情请查看：https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details`);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobDetail) {
@@ -93,6 +94,6 @@ function sleep(seconds) {
 
 // 从参数获取branch和codeRepo
 const branch = process.env.GITHUB_REF;
-const codeRepo = "https://github.com/"+ process.env.GITHUB_REPOSITORY + ".git";
+const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".com";
 const codeType = process.env.INPUT_CODE_TYPE;
 let notCare = getStarted(branch, codeRepo, codeType);
