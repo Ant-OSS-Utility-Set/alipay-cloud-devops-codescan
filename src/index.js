@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
-const {stringify} = require("../dist");
 
 async function getStarted(branch, codeRepo, codeType) {
     let failed = false;
@@ -76,8 +75,8 @@ async function getStarted(branch, codeRepo, codeType) {
                 headers: headers
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
-            let url ="https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details";
-            core.setFailed(`详情请查看：` + url.link(url));
+            const errorMessage = `详情请查看：[${jobId}/pipeline/details](https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details)`;
+            core.error(errorMessage);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobDetail) {
