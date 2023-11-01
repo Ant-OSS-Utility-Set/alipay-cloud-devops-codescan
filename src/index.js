@@ -76,7 +76,7 @@ async function getStarted(branch, codeRepo, codeType) {
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const link = `https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details`;
-            core.error(["详情查看:"]({link}));
+            core.error(`详情请查看：${link}`);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobDetail) {
