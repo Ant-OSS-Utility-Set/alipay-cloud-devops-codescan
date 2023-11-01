@@ -32589,8 +32589,8 @@ async function getStarted(branch, codeRepo, codeType) {
                 headers: headers
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
-            // const link = `https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details`;
-            // core.error(["详情查看:"](${link}));
+            const link = `https://devops.cloud.alipay.com/project/5603361/${jobId}/pipeline/details`;
+            core.error(["详情查看:"]({link}));
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobDetail) {
@@ -32608,7 +32608,8 @@ function sleep(seconds) {
 }
 
 // 从参数获取branch和codeRepo
-const branch = process.env.GITHUB_REF;
+const branchName = process.env.GITHUB_REF;
+const branch = branchName.replace('refs/heads/','')
 const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
 const codeType = process.env.INPUT_CODE_TYPE;
 let notCare = getStarted(branch, codeRepo, codeType);
