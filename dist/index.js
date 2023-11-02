@@ -32608,7 +32608,7 @@ function sleep(seconds) {
 }
 
 // 从参数获取branch和codeRepo
-const branchName = process.env.GITHUB_REF;
+const branchName = process.env.GITHUB_BASE_REF;
 const branch = branchName.replace('refs/heads/','')
 const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
 const codeType = process.env.INPUT_CODE_TYPE;
