@@ -2,11 +2,17 @@ const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
 
-async function getStarted(branch, codeRepo, codeType) {
+let notCare = getStarted();
+async function getStarted() {
     let failed = false;
     try {
         const spaceId = `600087`;
         const projectId = `5603361`;
+        // 从参数获取branch和codeRepo
+        const branchName = process.env.GITHUB_HEAD_REF;
+        const branch = branchName.replace('refs/heads/','')
+        const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
+        const codeType = process.env.INPUT_SCAN_TYPE;
 
         // 1. 获取token
         core.info("开始...");
@@ -92,10 +98,5 @@ async function getStarted(branch, codeRepo, codeType) {
 function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
+module.exports = getStarted;
 
-// 从参数获取branch和codeRepo
-const branchName = process.env.GITHUB_BASE_REF;
-const branch = branchName.replace('refs/heads/','')
-const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
-const codeType = process.env.INPUT_CODE_TYPE;
-let notCare = getStarted(branch, codeRepo, codeType);
