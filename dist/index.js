@@ -36022,12 +36022,14 @@ async function getStarted() {
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
-        // const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
+        core.debug("branch:" + branch);
+        core.debug("codeRepo:" + codeRepo);
+        core.debug("codeType:" + codeType);
 
         // 1. 获取token
-        core.info("开始...");
+        core.info("start...");
         const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
             "parent_uid": core.getInput('parent_uid', { required: true }),
             "private_key": core.getInput('private_key', { required: true }),
@@ -36064,9 +36066,10 @@ async function getStarted() {
         const recordId = pipelineExecuteResponse.data.result.recordId;
 
         // 3. 循环获取recordInfo
-        core.info("扫描中...");
+        core.info("Scanning...");
         let status = "";
-        const timeout = 20; // 分钟
+        const timeout = 20; // minute
+        let recordResponse;
         for (let i = 0; i < timeout * 6; i++) {
             const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
                 headers: headers
@@ -36077,13 +36080,9 @@ async function getStarted() {
             }
             await sleep(10);
         }
-
-        core.info("扫描完成");
+        core.info("Scan completed");
 
         // 获取失败的job, 获取失败信息
-        const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
-            headers: headers
-        });
         core.debug("recordResponse.data: " + JSON.stringify(recordResponse.data))
         const recordResult = recordResponse.data.result;
         const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
