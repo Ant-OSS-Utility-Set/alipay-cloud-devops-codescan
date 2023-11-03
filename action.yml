@@ -7,8 +7,8 @@ inputs:
     private_key:  # id of input
         description: 'another param to get token'
         required: true
-    scan_type: # id of input
-        description: 'another param to get token'
+    scan_type: #  type of input
+        description: 'Parameters used to obtain types'
         required: true
 outputs:
     result: # id of output
