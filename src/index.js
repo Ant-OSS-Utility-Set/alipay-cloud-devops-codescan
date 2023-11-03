@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
+const {context} = require("@actions/github");
+
 
 let notCare = getStarted();
 async function getStarted() {
@@ -11,14 +13,17 @@ async function getStarted() {
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
-        const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
+        // const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
+        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
 
         // 1. 获取token
         core.info("开始...");
         const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
-            "parent_uid": core.getInput('parent_uid', { required: true }),
-            "private_key": core.getInput('private_key', { required: true }),
+            // "parent_uid": core.getInput('parent_uid', { required: true }),
+            "parent_uid": process.env.ALI_PID,
+            // "private_key": core.getInput('private_key', { required: true }),
+            "private_key": process.env.ALI_PK,
         });
         const token = tokenResponse.data.data.access_token;
 
