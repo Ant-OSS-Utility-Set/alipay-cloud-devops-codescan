@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const axios = require('axios');
 const jobProcessors = require('./jobprocessors/processors');
+const {context} = require("@actions/github");
+
 
 let notCare = getStarted();
 async function getStarted() {
@@ -11,7 +13,8 @@ async function getStarted() {
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
-        const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
+        // const codeRepo = "git@github.com:"+ process.env.GITHUB_REPOSITORY + ".git";
+        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
 
         // 1. 获取token
