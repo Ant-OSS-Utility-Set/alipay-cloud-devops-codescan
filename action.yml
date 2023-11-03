@@ -7,6 +7,9 @@ inputs:
     private_key:  # id of input
         description: 'another param to get token'
         required: true
+    scan_type: #  type of input
+        description: 'stc for security check , sca for open source compliance check'
+        required: true
 outputs:
     result: # id of output
         description: 'code scan passed or not'
