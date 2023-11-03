@@ -8,7 +8,7 @@ inputs:
         description: 'another param to get token'
         required: true
     scan_type: #  type of input
-        description: 'Parameters used to obtain types'
+        description: 'securityScan and Open sourceComplianceScanning'
         required: true
 outputs:
     result: # id of output
