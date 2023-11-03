@@ -62,7 +62,7 @@ async function getStarted() {
         const timeout = 20; // minute
         let recordResponse;
         for (let i = 0; i < timeout * 6; i++) {
-            const recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
                 headers: headers
             });
             status = recordResponse.data.result.status;
