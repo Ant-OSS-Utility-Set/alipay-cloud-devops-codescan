@@ -87,7 +87,7 @@ async function getStarted() {
             core.error(`详情请查看：${link}`);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
-            if (jobDetail) {
+            if (jobProcessor) {
                 failed = jobProcessor(jobDetail) || failed;
             }
         }
