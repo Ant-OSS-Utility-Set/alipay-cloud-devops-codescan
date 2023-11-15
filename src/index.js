@@ -8,8 +8,8 @@ let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        const spaceId = `600087`;
-        const projectId = `5603361`;
+        const spaceId = `600095`;
+        const projectId = `19500036`;
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
@@ -30,16 +30,16 @@ async function getStarted() {
         // 设置请求头
         const headers = {
             'Authorization': `Bearer ${token}`,
-            'x-node-id': '14955076510547972',
+            'x-node-id': 'devstudio-5473cc73-ffad-49b1-996e-31f9d75061ef',
             'Content-Type': 'application/json'
         };
 
         // Set templateId based on codeType
         let templateId;
         if (codeType === "sca") {
-            templateId = 5603652;
+            templateId = 20000430;
         } else if (codeType === "stc") {
-            templateId = 9809103;
+            templateId = 20000425;
         } else {
             core.error("错误：无效的codeType");
             return;
