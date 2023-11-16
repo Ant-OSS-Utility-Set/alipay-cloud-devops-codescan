@@ -30,7 +30,7 @@ async function getStarted() {
         // 设置请求头
         const headers = {
             'Authorization': `Bearer ${token}`,
-            'x-node-id': '15961760943081154',
+            'x-node-id': core.getInput('parent_uid', { required: true }),
             'Content-Type': 'application/json'
         };
 
