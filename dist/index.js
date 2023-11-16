@@ -36039,7 +36039,7 @@ async function getStarted() {
         // 设置请求头
         const headers = {
             'Authorization': `Bearer ${token}`,
-            'x-node-id': 'devstudio-5473cc73-ffad-49b1-996e-31f9d75061ef',
+            'x-node-id': '15961760943081154',
             'Content-Type': 'application/json'
         };
 
