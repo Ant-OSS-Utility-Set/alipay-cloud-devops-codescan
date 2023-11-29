@@ -85,7 +85,7 @@ async function getStarted() {
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
-            core.warning(`详情请查看：${link}` + "  " + tips);
+            core.warning(`详情请查看：${link}\n${tips}`);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobProcessor) {
