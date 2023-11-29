@@ -12,7 +12,7 @@ inputs:
         required: true
     tips: #  prompt
         description: 'prompt tips'
-        required: true
+        required: false
 outputs:
     result: # id of output
         description: 'code scan passed or not'
