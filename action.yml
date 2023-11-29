@@ -10,6 +10,9 @@ inputs:
     scan_type: #  type of input
         description: 'stc for security check , sca for open source compliance check'
         required: true
+    tips: #  prompt
+        description: 'prompt tips'
+        required: true
 outputs:
     result: # id of output
         description: 'code scan passed or not'
