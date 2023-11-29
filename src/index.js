@@ -15,7 +15,7 @@ async function getStarted() {
         const branch = branchName.replace('refs/heads/','')
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
-        const tips = process.env.TIPS;
+        const tips = core.getInput('tips', { required: true })
         core.debug("branch:" + branch);
         core.debug("codeRepo:" + codeRepo);
         core.debug("codeType:" + codeType);
@@ -85,7 +85,7 @@ async function getStarted() {
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
-            core.warning(`详情请查看：${link}` + "," + tips);
+            core.warning(`详情请查看：${link}` + "  " + tips);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobProcessor) {
