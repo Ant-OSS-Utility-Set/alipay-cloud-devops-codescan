@@ -8,8 +8,8 @@ let notCare = getStarted();
 async function getStarted() {
     let failed = false;
     try {
-        const spaceId = `600095`;
-        const projectId = `19500036`;
+        const spaceId = `47`;
+        const projectId = `568`;
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
@@ -22,7 +22,7 @@ async function getStarted() {
 
         // 1. 获取token
         core.info("start...");
-        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.cloudrun.cloudbaseapp.cn/v2/login/serviceaccount', {
+        const tokenResponse = await axios.post('https://tcloudrunconsole.openapi.run.alipay.net/v2/login/serviceaccount', {
             "parent_uid": core.getInput('parent_uid', { required: true }),
             "private_key": core.getInput('private_key', { required: true }),
         });
@@ -38,16 +38,16 @@ async function getStarted() {
         // Set templateId based on codeType
         let templateId;
         if (codeType === "sca") {
-            templateId = 20000430;
+            templateId = 782;
         } else if (codeType === "stc") {
-            templateId = 20000425;
+            templateId = 783;
         } else {
             core.error("错误：无效的codeType");
             return;
         }
 
         // 2. 调用代码检查
-        const pipelineExecuteResponse = await axios.post(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute`, {
+        const pipelineExecuteResponse = await axios.post(`https://twebgwnet.alipay.com/tdevstudio/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/execute?projectId=${projectId}&spaceId=${spaceId}`, {
             "templateId": templateId,
             "branch": branch,
             "codeRepo": codeRepo
@@ -63,7 +63,7 @@ async function getStarted() {
         const timeout = 20; // minute
         let recordResponse;
         for (let i = 0; i < timeout * 6; i++) {
-            recordResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
+            recordResponse = await axios.get(`https://twebgwnet.alipay.com/tdevstudio/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}`, {
                 headers: headers
             });
             status = recordResponse.data.result.status;
@@ -80,7 +80,7 @@ async function getStarted() {
         const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
         for (const failureJob of allJobs) {
             const jobId = failureJob.id;
-            const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
+            const jobResponse = await axios.get(`https://twebgwnet.alipay.com/tdevstudio/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
                 headers: headers
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
