@@ -25,7 +25,8 @@ function process(jobDetail){
                 return;
             }
             const [componentName, version] = Object.entries(component)[0];
-            core.setFailed(`请注意, 项目依赖的 ${componentName}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
+            // core.setFailed(`请注意, 项目依赖的 ${componentName}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
+            core.warning(`请注意, 项目依赖的 ${componentName}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
             failed = true;
         });
     }
