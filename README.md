@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: codeScan
-        uses: nt-OSS-Utility-Set/alipay-cloud-devops-codescan@main
+        uses: Ant-OSS-Utility-Set/alipay-cloud-devops-codescan@main
         with:
           parent_uid: ${{ secrets.ALI_PID }}
           private_key: ${{ secrets.ALI_PK }}
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: codeScan
-        uses: nt-OSS-Utility-Set/alipay-cloud-devops-codescan@main
+        uses: Ant-OSS-Utility-Set/alipay-cloud-devops-codescan@main
         with:
           parent_uid: ${{ secrets.ALI_PID }}
           private_key: ${{ secrets.ALI_PK }}
