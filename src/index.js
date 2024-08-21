@@ -16,11 +16,11 @@ async function getStarted() {
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
         const tips = core.getInput('tips', { required: true })
+        // 许可证License,默认为Apache-2.0
+        const license = core.getInput('license', { required: false }) || "Apache-2.0";
         core.debug("branch:" + branch);
         core.debug("codeRepo:" + codeRepo);
         core.debug("codeType:" + codeType);
-        // 许可证License,默认为Apache-2.0
-        const license = core.getInput('license', { required: false }) || "Apache-2.0";
 
         // 1. 获取token
         core.info("start...");
