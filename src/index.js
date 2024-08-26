@@ -14,7 +14,7 @@ async function getStarted() {
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
         // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
-        core.debug("context.payload: " + JSON.stringify(context.payload))
+        core.info("context.payload: " + JSON.stringify(context.payload))
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
 
         const codeType = process.env.INPUT_SCAN_TYPE;
