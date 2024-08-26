@@ -34183,7 +34183,10 @@ async function getStarted() {
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
+        // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        core.debug("context.payload: " + JSON.stringify(context.payload))
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+
         const codeType = process.env.INPUT_SCAN_TYPE;
         const tips = core.getInput('tips', { required: true })
         core.debug("branch:" + branch);
