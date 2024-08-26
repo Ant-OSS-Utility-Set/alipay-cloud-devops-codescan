@@ -34185,7 +34185,7 @@ async function getStarted() {
         const branch = branchName.replace('refs/heads/','')
         // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         core.info("context.payload: " + JSON.stringify(context.payload))
-        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
+        const codeRepo = context.payload.repository.ssh_url;
 
         const codeType = process.env.INPUT_SCAN_TYPE;
         const tips = core.getInput('tips', { required: true })
