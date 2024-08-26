@@ -34184,14 +34184,14 @@ async function getStarted() {
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
         // const codeRepo = context.payload.pull_request.head.repo.ssh_url;
-        core.info("context.payload: " + JSON.stringify(context.payload))
+        core.info("context.payload: " + JSON.stringify(context.payload));
         const codeRepo = context.payload.repository.ssh_url;
 
         const codeType = process.env.INPUT_SCAN_TYPE;
         const tips = core.getInput('tips', { required: true })
-        core.debug("branch:" + branch);
-        core.debug("codeRepo:" + codeRepo);
-        core.debug("codeType:" + codeType);
+        core.info("branch:" + branch);
+        core.info("codeRepo:" + codeRepo);
+        core.info("codeType:" + codeType);
 
         // 1. 获取token
         core.info("start...");
