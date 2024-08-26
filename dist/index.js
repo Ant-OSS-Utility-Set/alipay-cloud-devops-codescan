@@ -34186,8 +34186,6 @@ async function getStarted() {
         const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         const codeType = process.env.INPUT_SCAN_TYPE;
         const tips = core.getInput('tips', { required: true })
-        // 许可证License,默认为Apache-2.0
-        const license = core.getInput('license', { required: false }) || "Apache-2.0";
         core.debug("branch:" + branch);
         core.debug("codeRepo:" + codeRepo);
         core.debug("codeType:" + codeType);
@@ -34207,31 +34205,10 @@ async function getStarted() {
             'Content-Type': 'application/json'
         };
 
-        // sca扫描任务header
-        // PRIVATE-TOKEN获取：https://antscaservice.alipay.com/profile
-        const scaHeaders = {
-            'PRIVATE-TOKEN': '29e2c23d-948a-4408-949d-37f633fbcd8e'
-        };
         // Set templateId based on codeType
         let templateId;
-        let scaTaskId;
         if (codeType === "sca") {
             templateId = 20000430;
-            // sca接入新API
-            // 创建扫描任务
-            const missionResponse = await axios.post('https://tantscaservice.run.alipay.net/v1/openapi/mission/create', {
-                "userId":"2088612373631646",
-                "branchName": branch,
-                "repoUrl": codeRepo,
-                "license": license,
-                "scaTool": 0,
-                "sourceSystem": "Openapi",
-                "skipScan": true
-            }, {
-                headers: scaHeaders
-            });
-            core.debug("missionResponse: "+JSON.stringify(missionResponse));
-            scaTaskId = missionResponse.data;
         } else if (codeType === "stc") {
             templateId = 20000425;
         } else {
@@ -34278,12 +34255,7 @@ async function getStarted() {
             });
             core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
-            const scaLink = `https://tantscaservice.run.alipay.net/dashboard/mission/${scaTaskId}`;
-            if (codeType === "sca") {
-                core.warning(`详情请查看：${scaLink}` + "  " + tips);
-            } else {
-                core.warning(`详情请查看：${link}` + "  " + tips);
-            }
+            core.warning(`详情请查看：${link}` + "  " + tips);
             const jobDetail = jobResponse.data.result.data;
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobProcessor) {
