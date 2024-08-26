@@ -34180,6 +34180,7 @@ async function getStarted() {
     try {
         const spaceId = `600095`;
         const projectId = `19500036`;
+        core.info("process.env: " + JSON.stringify(process.env));
         // 从参数获取branch和codeRepo
         const branchName = process.env.GITHUB_HEAD_REF;
         const branch = branchName.replace('refs/heads/','')
