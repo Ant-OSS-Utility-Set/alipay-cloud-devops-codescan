@@ -34251,7 +34251,7 @@ async function getStarted() {
         core.info("Scan completed");
 
         // 获取失败的job, 获取失败信息
-        core.debug("recordResponse.data: " + JSON.stringify(recordResponse.data))
+        core.info("recordResponse.data: " + JSON.stringify(recordResponse.data))
         const recordResult = recordResponse.data.result;
         const allJobs = recordResult.stageExecutions.flatMap(stage => stage.jobExecutions);
         for (const failureJob of allJobs) {
@@ -34259,7 +34259,7 @@ async function getStarted() {
             const jobResponse = await axios.get(`https://tdevstudio.openapi.cloudrun.cloudbaseapp.cn/webapi/v1/space/${spaceId}/project/${projectId}/pipeline/${recordId}/job/${jobId}`, {
                 headers: headers
             });
-            core.debug("jobResponse.data: " + JSON.stringify(jobResponse.data))
+            core.info("jobResponse.data: " + JSON.stringify(jobResponse.data))
             const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
             core.warning(`详情请查看：${link}` + "  " + tips);
             const jobDetail = jobResponse.data.result.data;
