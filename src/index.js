@@ -93,6 +93,7 @@ async function getStarted() {
             const link = `https://devops.cloud.alipay.com/project/${projectId}/${recordId}/pipeline/details`;
             core.warning(`详情请查看：${link}` + "  " + tips);
             const jobDetail = jobResponse.data.result.data;
+            core.info("jobDetail: " + jobDetail)
             const jobProcessor = jobProcessors[failureJob.componentName];
             if (jobProcessor) {
                 failed = jobProcessor(jobDetail) || failed;
