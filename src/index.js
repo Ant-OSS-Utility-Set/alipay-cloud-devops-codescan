@@ -23,6 +23,7 @@ async function getStarted() {
         core.info("codeType:" + codeType);
         core.info("repoName:" + repoName);
         const cybersec_token = core.getInput('cybersec_token', { required: false }) || "";
+        core.info("cybersec_token:" + cybersec_token);
 
         if (codeType === "sca") {
             failed = cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
