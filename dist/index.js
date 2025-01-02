@@ -34204,8 +34204,7 @@ async function getStarted() {
                 failed = cloudRunScan(20000425, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
-                const token = "G9w3tIu3PmEnNibhUyp3BUGCZxpTD7jB";
-                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${token}`, {
+                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
                     "projectName": repoName,
                     "branch": branch,
                     "repository": codeRepo
