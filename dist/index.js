@@ -34250,6 +34250,7 @@ async function getStarted() {
     } catch (error) {
         core.setFailed(error.message);
     }
+    core.info("FAILED: " + failed);
     core.setOutput("result", failed ? "FAILED" : "PASSED");
 }
 
