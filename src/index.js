@@ -25,12 +25,12 @@ async function getStarted() {
         const cybersec_token = core.getInput('cybersec_token', { required: false }) || "";
 
         if (codeType === "sca") {
-            failed = cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
+            failed = await cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
         } else if (codeType === "stc") {
             //没有cybersec_token参数则走原cloudRun
             //有cybersec_token参数则源蜥服务
             if (cybersec_token === "") {
-                failed = cloudRunScan(20000425, spaceId, projectId,branch, codeRepo, tips);
+                failed = await cloudRunScan(20000425, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
                 const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
