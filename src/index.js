@@ -23,7 +23,6 @@ async function getStarted() {
         core.info("codeType:" + codeType);
         core.info("repoName:" + repoName);
         const cybersec_token = core.getInput('cybersec_token', { required: false }) || "";
-        core.info("cybersec_token:" + cybersec_token);
 
         if (codeType === "sca") {
             failed = cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
@@ -49,7 +48,7 @@ async function getStarted() {
                 let statusResponse;
                 let shareLink = "";
                 for (let i = 0; i < timeout * 6; i++) {
-                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${token}`);
+                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
                     status = statusResponse.data.data.status;
                     if (status === "扫描完成" || status === "扫描失败") {
                         shareLink = statusResponse.data.data.shareLink;
@@ -61,7 +60,7 @@ async function getStarted() {
 
                 // 3. 获取扫描结果
                 if (status === "扫描完成") {
-                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/vuls/detail?token=${token}`, {
+                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/vuls/detail?token=${cybersec_token}`, {
                         "repoId": projectId,
                         "page": "1",
                         "size": "200"
