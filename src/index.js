@@ -31,7 +31,7 @@ async function getStarted() {
             //没有cybersec_token参数则走原cloudRun
             //有cybersec_token参数则源蜥服务
             if (cybersec_token === "") {
-                failed = cloudRunScan(20000431, spaceId, projectId,branch, codeRepo, tips);
+                failed = cloudRunScan(20000425, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
                 const token = "G9w3tIu3PmEnNibhUyp3BUGCZxpTD7jB";
