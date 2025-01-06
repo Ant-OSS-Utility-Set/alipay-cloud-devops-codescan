@@ -18,6 +18,8 @@ alipay-cloud-devops-codescan 希望可以帮助开源项目对自身以及贡献
 
 2、创建一个名为cloud_code_scan.yml的文件，并将下面的内容复制进来
 
+3、升级stc组件扫描到源蜥平台请配置CYBERSEC_TOKEN
+
 ```yaml
 name: Alipay Cloud Devops Codescan
 on:
@@ -32,6 +34,8 @@ jobs:
         with:
           parent_uid: ${{ secrets.ALI_PID }}
           private_key: ${{ secrets.ALI_PK }}
+          # 按需配置，如果需要接入源蜥平台服务请配置一下token
+          # cybersec_token: ${{ secrets.CYBERSEC_TOKEN }}
           scan_type: stc 
           # 按需配置，不配置为空即可注意‘’中需要有空格，或直接去点tips
           tips: '可以加入钉钉群：xxxx  来申请查看权限' 

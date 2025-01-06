@@ -14,6 +14,10 @@ inputs:
         description: 'prompt tips'
         required: false
         default: ' '
+    cybersec_token: #   cybersec_token
+        description: 'token for cybersec'
+        required: false
+        default: ' '
 outputs:
     result: # id of output
         description: 'code scan passed or not'
