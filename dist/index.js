@@ -34181,9 +34181,12 @@ async function getStarted() {
         const spaceId = `600095`;
         const projectId = `19500036`;
         // 从参数获取branch和codeRepo
+        const branchName = process.env.GITHUB_HEAD_REF;
+        const branch = branchName.replace('refs/heads/','')
+        const codeRepo = context.payload.pull_request.head.repo.ssh_url;
         // pull_request事件取context.payload.pull_request.head.ref， commit改动取context.payload.ref
-        const branch = context.payload.pull_request?context.payload.pull_request.head.ref : context.payload.ref.replace('refs/heads/','');
-        const codeRepo = context.payload.repository.ssh_url;
+//        const branch = context.payload.pull_request?context.payload.pull_request.head.ref : context.payload.ref.replace('refs/heads/','');
+//        const codeRepo = context.payload.repository.ssh_url;
         const repoName = context.payload.repository.full_name;
 
         const codeType = process.env.INPUT_SCAN_TYPE;
