@@ -36004,8 +36004,7 @@ async function getStarted() {
                 failed = await cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
-//                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
-                const scanTaskResponse = await axios.post(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
+                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
                     "projectName": repoName,
                     "branch": branch,
                     "repository": codeRepo
@@ -36020,8 +36019,7 @@ async function getStarted() {
                 let statusResponse;
                 let shareLink = "";
                 for (let i = 0; i < timeout * 6; i++) {
-//                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
-                    statusResponse = await axios.get(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
+                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
                     status = statusResponse.data.data.status;
                     if (status === "扫描完成" || status === "扫描失败") {
                         shareLink = statusResponse.data.data.shareLink;
@@ -36033,14 +36031,13 @@ async function getStarted() {
 
                 // 3. 获取许可证冲突扫描结果
                 if (status === "扫描完成") {
-//                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/lisense?token=${cybersec_token}`, {
-                    const scanResultResponse = await axios.post(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/lisense?token=${cybersec_token}`, {
+                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/lisense?token=${cybersec_token}`, {
                         "repoId": projectId,
                         "page": "1",
                         "size": "200"
                     });
                     core.warning(`详情请查看：${shareLink}` + " " + "(link valid for 3 days)");
-                    const itemList = scanResultResponse.data.data.itemList;
+                    const itemList = scanResultResponse.data.data.projectLicenseConflict||[];
                     const jobProcessor = jobProcessors["new-sca"];
                     if (jobProcessor) {
                         failed = jobProcessor(itemList) || failed;
@@ -36054,8 +36051,7 @@ async function getStarted() {
                 failed = await cloudRunScan(20000425, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
-//                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
-                const scanTaskResponse = await axios.post(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
+                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
                     "projectName": repoName,
                     "branch": branch,
                     "repository": codeRepo
@@ -36070,8 +36066,7 @@ async function getStarted() {
                 let statusResponse;
                 let shareLink = "";
                 for (let i = 0; i < timeout * 6; i++) {
-//                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
-                    statusResponse = await axios.get(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
+                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
                     status = statusResponse.data.data.status;
                     if (status === "扫描完成" || status === "扫描失败") {
                         shareLink = statusResponse.data.data.shareLink;
@@ -36083,15 +36078,14 @@ async function getStarted() {
 
                 // 3. 获取扫描结果
                 if (status === "扫描完成") {
-//                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/vuls/detail?token=${cybersec_token}`, {
-                    const scanResultResponse = await axios.post(`http://iastapp1.inc.alipay.net/api/sca/open/v1/repo/vuls/detail?token=${cybersec_token}`, {
+                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/vuls/detail?token=${cybersec_token}`, {
                         "repoId": projectId,
                         "page": "1",
                         "size": "200"
                     });
                     core.warning(`详情请查看：${shareLink}` + " " + "(link valid for 3 days)");
-                    const itemList = scanResultResponse.data.data.projectLicenseConflict;
-                    const jobProcessor = jobProcessors["new-sca"];
+                    const itemList = scanResultResponse.data.data.itemList;
+                    const jobProcessor = jobProcessors["new-stc"];
                     if (jobProcessor) {
                         failed = jobProcessor(itemList) || failed;
                     }
@@ -36238,16 +36232,14 @@ const core = __nccwpck_require__(2186);
  */
 function process(itemList){
     core.debug("licence itemList:"+itemList)
-    if (itemList==null || itemList.length==0) {
+    if (itemList.length==0) {
         return true
     }
 
-    //licence冲突 报错
-//    itemList.forEach((item, index) => {
-//                // core.setFailed(`请注意, 项目依赖的 ${componentName}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
-//                core.warning(`请注意, 项目依赖的 ${item.projectLicense}:${version} 组件,使用的licence可能与本项目冲突: ${licenceName}`)
-//                failed = true;
-//            });
+//    licence冲突 报错
+    itemList.forEach((item, index) => {
+                core.warning(`请注意, 项目依赖的 ${item.namespace}:${item.name}:${item.version} 组件,使用的licence可能与本项目冲突: ${item.sbomLicense}`)
+            });
     return false;
 }
 module.exports = process;
