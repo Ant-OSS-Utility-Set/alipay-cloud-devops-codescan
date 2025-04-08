@@ -36230,14 +36230,14 @@ const core = __nccwpck_require__(2186);
 function process(itemList){
     core.debug("licence itemList:"+itemList)
     if (itemList.length==0) {
-        return true
+        return false
     }
 
 //    licence冲突 报错
     itemList.forEach((item, index) => {
                 core.warning(`请注意, 项目依赖的 ${item.namespace}:${item.name}:${item.version} 组件,使用的licence可能与本项目冲突: ${item.sbomLicense}`)
             });
-    return false;
+    return true;
 }
 module.exports = process;
 
