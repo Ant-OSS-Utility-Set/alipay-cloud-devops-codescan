@@ -25,7 +25,47 @@ async function getStarted() {
         const cybersec_token = core.getInput('cybersec_token', { required: false }) || "";
 
         if (codeType === "sca") {
-            failed = await cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
+            if (cybersec_token === "") {
+                failed = await cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
+            } else {
+                //1. 创建扫描任务
+                const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
+                    "projectName": repoName,
+                    "branch": branch,
+                    "repository": codeRepo
+                });
+                const scanTaskId = scanTaskResponse.data.data.scanId;
+                const projectId = scanTaskResponse.data.data.projectId;
+
+                // 2. 循环获取扫描结果
+                core.info("Scanning...");
+                let status = "";
+                const timeout = 20; // minute
+                let statusResponse;
+                for (let i = 0; i < timeout * 6; i++) {
+                    statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
+                    status = statusResponse.data.data.status;
+                    if (status === "扫描完成" || status === "扫描失败") {
+                        break;
+                    }
+                    await sleep(10);
+                }
+                core.info("Scan completed, projectId: " + projectId +  ", scanId: " + scanTaskId + ", status: " + status);
+
+                // 3. 获取许可证冲突扫描结果
+                if (status === "扫描完成") {
+                    const scanResultResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/lisense?token=${cybersec_token}`, {
+                        "repoId": projectId,
+                        "page": "1",
+                        "size": "200"
+                    });
+                    const itemList = scanResultResponse.data.data.projectLicenseConflict||[];
+                    const jobProcessor = jobProcessors["new-sca"];
+                    if (jobProcessor) {
+                        failed = jobProcessor(itemList) || failed;
+                    }
+                }
+            }
         } else if (codeType === "stc") {
             //没有cybersec_token参数则走原cloudRun
             //有cybersec_token参数则源蜥服务
@@ -56,7 +96,7 @@ async function getStarted() {
                     }
                     await sleep(10);
                 }
-                core.info("Scan completed, status: " + status);
+                core.info("Scan completed, projectId: " + projectId +  ", scanId: " + scanTaskId + ", status: " + status);
 
                 // 3. 获取扫描结果
                 if (status === "扫描完成") {
