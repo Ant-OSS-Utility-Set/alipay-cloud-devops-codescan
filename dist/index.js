@@ -36027,7 +36027,7 @@ async function getStarted() {
                     }
                     await sleep(10);
                 }
-                core.info("Scan completed, status: " + status);
+                core.info("Scan completed, projectId: " + projectId +  ", scanId: " + scanTaskId + ", status: " + status);
 
                 // 3. 获取许可证冲突扫描结果
                 if (status === "扫描完成") {
@@ -36074,7 +36074,7 @@ async function getStarted() {
                     }
                     await sleep(10);
                 }
-                core.info("Scan completed, status: " + status);
+                core.info("Scan completed, projectId: " + projectId +  ", scanId: " + scanTaskId + ", status: " + status);
 
                 // 3. 获取扫描结果
                 if (status === "扫描完成") {
