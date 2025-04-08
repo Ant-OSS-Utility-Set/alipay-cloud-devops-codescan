@@ -42,12 +42,10 @@ async function getStarted() {
                 let status = "";
                 const timeout = 20; // minute
                 let statusResponse;
-                let shareLink = "";
                 for (let i = 0; i < timeout * 6; i++) {
                     statusResponse = await axios.get(`https://cybersec.antgroup.com/api/sca/open/v1/repo/job/status?jobId=${scanTaskId}&token=${cybersec_token}`);
                     status = statusResponse.data.data.status;
                     if (status === "扫描完成" || status === "扫描失败") {
-                        shareLink = statusResponse.data.data.shareLink;
                         break;
                     }
                     await sleep(10);
@@ -61,7 +59,6 @@ async function getStarted() {
                         "page": "1",
                         "size": "200"
                     });
-                    core.warning(`详情请查看：${shareLink}` + " " + "(link valid for 3 days)");
                     const itemList = scanResultResponse.data.data.projectLicenseConflict||[];
                     const jobProcessor = jobProcessors["new-sca"];
                     if (jobProcessor) {
