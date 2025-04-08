@@ -35999,13 +35999,15 @@ async function getStarted() {
         core.info("repoName:" + repoName);
         const cybersec_token = core.getInput('cybersec_token', { required: false }) || "";
 
+        const projectName = repoName + "-" + branch;
+
         if (codeType === "sca") {
             if (cybersec_token === "") {
                 failed = await cloudRunScan(20000430, spaceId, projectId,branch, codeRepo, tips);
             } else {
                 //1. 创建扫描任务
                 const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
-                    "projectName": repoName,
+                    "projectName": projectName,
                     "branch": branch,
                     "repository": codeRepo
                 });
@@ -36049,7 +36051,7 @@ async function getStarted() {
             } else {
                 //1. 创建扫描任务
                 const scanTaskResponse = await axios.post(`https://cybersec.antgroup.com/api/sca/open/v1/repo/scan/git?token=${cybersec_token}`, {
-                    "projectName": repoName,
+                    "projectName": projectName,
                     "branch": branch,
                     "repository": codeRepo
                 });
